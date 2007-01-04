@@ -37,7 +37,7 @@ function user_token_list($type = 'all') {
     $tokens['user']['[uid]']       = t("User's ID");
     $tokens['user']['[mail]']      = t("User's email address");
  
-    $tokens['user']['[reg-date]']  = t("User's registration date');
+    $tokens['user']['[reg-date]']  = t("User's registration date");
     $tokens['user']['[reg-since]'] = t("Days since the user registered");
     $tokens['user']['[log-date]']  = t("User's last login date");
     $tokens['user']['[log-since]'] = t("Days since the user's last login");
