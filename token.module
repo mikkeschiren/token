@@ -91,6 +91,7 @@ function theme_token_help($type = 'all') {
   $headers = array(t('Token'), t('Replacement value'));
   $rows = array();
   foreach ($full_list as $key => $category) {
+    $rows[] = array(array('data' => drupal_ucfirst($key) . ' ' . t('tokens'), 'class' => 'region', 'colspan' => 2));
     foreach ($category as $token => $description) {
       $row = array();
       $row[] = $token;
