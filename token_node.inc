@@ -117,10 +117,9 @@ function node_token_list($type = 'all') {
 }
 
 // Two helper functions that generate appropriate tokens for CCK-added fields.
-function content_token_values($type, $object) {
+function content_token_values($type, $object = NULL) {
   if ($type == 'node') {
     $node = $object;
-    $node = node_build_content($node);
 
     $tokens = array();
     foreach (content_fields() as $field) {
