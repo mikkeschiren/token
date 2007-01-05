@@ -115,3 +115,27 @@ function node_token_list($type = 'all') {
     return $tokens;
   }
 }
+
+// Two helper functions that generate appropriate tokens for CCK-added fields.
+function content_token_values($type, $object) {
+  if ($type == 'node') {
+    $node = $object;
+    $node = node_build_content($node);
+
+    $tokens = array();
+    foreach (content_fields() as $field) {
+      $items = $node->$field['field_name'];
+      $tokens['['. $field['field_name'] .']'] = strip_tags($items[0]['view']);
+    }
+  }
+}
+
+function content_token_list($type) {
+  if ($type == 'node' || $token == 'all') {
+    $list = array();
+    foreach (content_fields() as $field) {
+      $list['CCK field']['['. $field['field_name'] .']'] = t($field['widget']['label']);
+    }
+    return $list;
+  }
+}
