@@ -127,6 +127,7 @@ function content_token_values($type, $object = NULL) {
       $tokens['['. $field['field_name'] .']'] = strip_tags($items[0]['view']);
     }
   }
+  return $tokens;
 }
 
 function content_token_list($type) {
