@@ -118,13 +118,13 @@ function node_token_list($type = 'all') {
 
 // Two helper functions that generate appropriate tokens for CCK-added fields.
 function content_token_values($type, $object = NULL) {
+  $tokens = array();
   if ($type == 'node') {
     $node = $object;
 
-    $tokens = array();
     foreach (content_fields() as $field) {
       $items = $node->$field['field_name'];
-      $tokens['['. $field['field_name'] .']'] = strip_tags($items[0]['view']);
+      $tokens['['. $field['field_name'] .']'] = $items[0]['view'] ? check_plain($items[0]['view']) : check_plain($items[0]['value']);
     }
   }
   return $tokens;
@@ -136,6 +136,47 @@ function content_token_list($type) {
     foreach (content_fields() as $field) {
       $list['CCK field']['['. $field['field_name'] .']'] = t($field['widget']['label']);
     }
+    return $list;
+  }
+}
+
+// Handle book nodes.
+function book_token_values($type, $object = NULL) {
+  if ($type == 'node') {
+    $node = $object;
+
+    $tokens = array();
+    if ($node->parent) {
+      $path = book_location($node);
+      $tokens['[book]'] = check_plain($path[0]->title);
+      $tokens['[book_id]'] = $node->parent;
+
+      $bookhierarchy = book_location($node);
+      $bookpath = '';
+      foreach ($bookhierarchy as $bookelement) {
+        if ($bookpath == '') {
+          $bookpath = check_plain($bookelement->title);
+        } 
+        else {
+          $bookpath = $bookpath . '/' . check_plain($bookelement->title);
+        }
+      }
+      $tokens['[bookpath]'] = $bookpath;
+    } 
+    else {
+      $tokens['[book]'] = '';
+      $tokens['[book_id]'] = '';
+      $tokens['[bookpath]'] = '';
+    }
+    return $tokens;
+  }
+}
+
+function book_token_list($type) {
+  if ($type == 'node' || $token == 'all') {
+    $list['book']['[book]'] = t("The title of the node's book parent.");
+    $list['book']['[book_id]'] = t("The id of the node's book parent.");
+    $list['book']['[bookpath]'] = t("The titles of all parents in the node's book hierarchy.");
     return $list;
   }
 }
