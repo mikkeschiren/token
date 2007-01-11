@@ -20,12 +20,18 @@ include_once('token_user.inc');
  * @param object
  *   Optionally, the object to use for building substitution values.
  *   A node, comment, user, etc.
+ * @param leading
+ *    Character(s) to prepend to the token key before searching for
+ *    matches. Defaults to an open-bracket.
+ * @param trailing
+ *    Character(s) to append to the token key before searching for
+ *    matches. Defaults to a close-bracket.
  * @return The modified version of $original, with all substitutions
  *   made.
  **/
-function token_replace($original, $type = 'global', $object = NULL) {
+function token_replace($original, $type = 'global', $object = NULL, $leading = '[', $trailing = ']') {
   $full = token_get_values($type, $object);
-  $tokens = $full->tokens;
+  $tokens = token_prepare_tokens($full->tokens, $leading, $trailing);
   $values = $full->values;
   $result = str_replace($tokens, $values, $original);
   return $result;
@@ -127,13 +133,13 @@ function token_token_values($type, $object = NULL) {
 
   switch ($type) {
     case 'global':
-      $values['[user-name]']    = $user->uid ? $user->name : variable_get('anonymous', t('Anonymous'));
-      $values['[user-id]']      = $user->uid ? $user->uid : 0;
-      $values['[user-mail]']    = $user->uid ? $user->mail : '';
-      $values['[site-url]']     = $base_url;
-      $values['[site-name]']    = variable_get('site_name', t('Drupal'));
-      $values['[site-slogan]']  = variable_get('site_slogan', '');
-      $values['[site-mail]']    = variable_get('site_mail', '');
+      $values['user-name']    = $user->uid ? $user->name : variable_get('anonymous', t('Anonymous'));
+      $values['user-id']      = $user->uid ? $user->uid : 0;
+      $values['user-mail']    = $user->uid ? $user->mail : '';
+      $values['site-url']     = $base_url;
+      $values['site-name']    = variable_get('site_name', t('Drupal'));
+      $values['site-slogan']  = variable_get('site_slogan', '');
+      $values['site-mail']    = variable_get('site_mail', '');
       break;
   }
   return $values;
@@ -154,13 +160,37 @@ function token_token_values($type, $object = NULL) {
  *   in the form of: $list[$type][$token] = $description
  */
 function token_token_list($type = 'all') {
-  $tokens['global']['[user-name]']    = t('The name of the currently logged in user.');
-  $tokens['global']['[user-id]']      = t('The user ID of the currently logged in user.');
-  $tokens['global']['[user-mail]']    = t('The email address of the currently logged in user.');
-  $tokens['global']['[site-url]']     = t('The url of the current Drupal website.');
-  $tokens['global']['[site-name]']    = t('The name of the current Drupal website.');
-  $tokens['global']['[site-slogan]']  = t('The slogan of the current Drupal website.');
-  $tokens['global']['[site-mail]']    = t('The contact email address for the current Drupal website.');
+  $tokens['global']['user-name']    = t('The name of the currently logged in user.');
+  $tokens['global']['user-id']      = t('The user ID of the currently logged in user.');
+  $tokens['global']['user-mail']    = t('The email address of the currently logged in user.');
+  $tokens['global']['site-url']     = t('The url of the current Drupal website.');
+  $tokens['global']['site-name']    = t('The name of the current Drupal website.');
+  $tokens['global']['site-slogan']  = t('The slogan of the current Drupal website.');
+  $tokens['global']['site-mail']    = t('The contact email address for the current Drupal website.');
+  return $tokens;
+}
+
+/**
+ * A helper function that transforms all the elements of an
+ * array. Used to change the delimiter style from brackets to
+ * percent symbols etc.
+ *
+ * @param tokens
+ *    The array of tokens keys with no delimiting chacaters
+ * @param leading
+ *    Character(s) to prepend to the token key before searching for
+ *    matches. Defaults to an open-bracket.
+ * @param trailing
+ *    Character(s) to append to the token key before searching for
+ *    matches. Defaults to a close-bracket.
+ *  @return
+ *    The array of token keys, each wrapped in the specified
+ *    delimiter style.
+ */
+function token_prepare_tokens($tokens = array(), $leading = '[', $trailing = ']') {
+  foreach ($tokens as $key => $value) {
+    $tokens[$key] = $leading . $value . $trailing;
+  }
   return $tokens;
 }
 

@@ -33,7 +33,8 @@ Using Token Replacement
 To apply token replacement to a chunk of text, you have two options. The
 first, and simplest, is:
 
-  token_replace($original, $type = 'global', $object = NULL)
+  token_replace($original, $type = 'global', $object = NULL,
+                $leading = '[', $trailing = ']')
 
 $original is the source text to perform substitutions on: it can be either
 a simple string, or an array of multiple strings.
@@ -45,6 +46,12 @@ values from the node being aliased, are two examples.
 
 $type should contain the general object type (node, comment, user, etc.)
 while $object should contain the object itself.
+
+$leading and $trailing can be used to override the default token style.
+For example, to replace tokens using %this style, pass in '%' and '' for
+the $leading and $trailing values. Note that specifing a leading but NOT
+trailing value can lead to false positives if two tokens are named in a
+similar fashion (%node_term and %node_term_id, for example).
 
 
 
