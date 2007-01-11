@@ -46,26 +46,25 @@ function node_token_values($type, $object = NULL) {
       // And now taxonomy, which is a bit more work. This code is adapted from
       // pathauto's handling code; it's intended for compatability with it.
       if (module_exists('taxonomy') && is_array($node->taxonomy) && count($node->taxonomy) > 0) {
-        foreach ($node->taxonomy as $firsttermid) {
-          if ($firsttermid) {
+        foreach ($node->taxonomy as $term) {
+          if ($term) {
+            $values['[term]'] = $term->name;
+            $values['[term-id]'] = $term->tid;
+
+            $vid = $term->vid;
+            $vocabulary = taxonomy_get_vocabulary($vid);
+            $values['[vocab]'] = $vocabulary->name;
+            $values['[vocab-id]'] = $vocabulary->name;
+
+            $catpath = '';
+            $parents = taxonomy_get_parents_all($firsttermid);
+            foreach ($parents as $parent) {
+              $catpath = $parent->name.'/'.$catpath;
+            }
+            $values['[catpath]'] = $catpath;
             break;
           }
         }
-        $term = taxonomy_get_term($firsttermid);
-        $values['[term]'] = $term->name;
-        $values['[term-id]'] = $term->tid;
-
-        $vid = $term->vid;
-        $vocabulary = taxonomy_get_vocabulary($vid);
-        $values['[vocab]'] = $vocabulary->name;
-        $values['[vocab-id]'] = $vocabulary->name;
-
-        $catpath = '';
-        $parents = taxonomy_get_parents_all($firsttermid);
-        foreach ($parents as $parent) {
-          $catpath = $parent->name.'/'.$catpath;
-        }
-        $values['[catpath]'] = $catpath;
       } 
       else {
         $values['[term]'] = '';
