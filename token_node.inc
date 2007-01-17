@@ -57,7 +57,7 @@ function node_token_values($type, $object = NULL) {
             $values['vocab-id'] = $vocabulary->name;
 
             $catpath = '';
-            $parents = taxonomy_get_parents_all($firsttermid);
+            $parents = taxonomy_get_parents_all($term->tid);
             foreach ($parents as $parent) {
               $catpath = $parent->name.'/'.$catpath;
             }
@@ -123,7 +123,7 @@ function content_token_values($type, $object = NULL) {
 
     foreach (content_fields() as $field) {
       $items = $node->$field['field_name'];
-      $tokens[''. $field['field_name'] .''] = $items[0]['view'] ? check_plain($items[0]['view']) : check_plain($items[0]['value']);
+      $tokens[''. $field['field_name'] .''] = content_format($field['field_name'], $items[0]);
     }
   }
   return $tokens;
