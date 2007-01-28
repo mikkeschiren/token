@@ -87,6 +87,7 @@ function node_token_list($type = 'all') {
     $tokens['node']['nid']            = t('Node ID');
     $tokens['node']['type']           = t('Node type');
     $tokens['node']['type-name']      = t('Node type (user-friendly version)');
+    $tokens['node']['title']          = t('Node title');
 
     $tokens['node']['author-uid']     = t("Node author's user id");
     $tokens['node']['author-name']    = t("Node author's user name");
@@ -109,7 +110,7 @@ function node_token_list($type = 'all') {
     $tokens['node']['ddd']            = t("Node creation day (abbreviation)");
     $tokens['node']['dd']             = t("Node creation day (two digit, zero-padded)");
     $tokens['node']['d']              = t("Node creation day (one or two digit)");
-    $tokens['node']['mod-???? etc.']  = t('All tokens for node creation dates can also be used with with the "mod-" prefix; doing so will use the modification date rather than the creation date.');
+    $tokens['node']['mod-????']       = t('All tokens for node creation dates can also be used with with the "mod-" prefix; doing so will use the modification date rather than the creation date.');
 
     return $tokens;
   }
