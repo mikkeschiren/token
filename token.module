@@ -1,9 +1,6 @@
 <?php
 // $Id$
 
-include_once('token_node.inc');
-include_once('token_user.inc');
-
 /**
  * Return the value of $original, with all instances of placeholder
  * tokens replaced by their proper values.
@@ -57,6 +54,9 @@ function token_replace($original, $type = 'global', $object = NULL, $leading = '
 function token_get_values($type = 'global', $object = NULL) {
   static $tokens;
 
+  include_once('token_node.inc');
+  include_once('token_user.inc');
+
   if (!isset($tokens)) {
     $tokens = array();
   }
@@ -89,9 +89,16 @@ function token_get_values($type = 'global', $object = NULL) {
  *
  * @param type
  *    The token types to display documentation for. Defaults to 'all'.
+ * @param prefix
+ *    The prefix your module will use when parsing tokens. Defaults to '['
+ * @param suffix
+ *    The suffix your module will use when parsing tokens. Defaults to ']'
  * @return An HTML table containing the formatting docs.
  **/
-function theme_token_help($type = 'all') {
+function theme_token_help($type = 'all', $prefix = '[', $suffix = ']') {
+  include_once('token_node.inc');
+  include_once('token_user.inc');
+
   $full_list = module_invoke_all('token_list', $type);
   
   $headers = array(t('Token'), t('Replacement value'));
@@ -100,7 +107,7 @@ function theme_token_help($type = 'all') {
     $rows[] = array(array('data' => drupal_ucfirst($key) . ' ' . t('tokens'), 'class' => 'region', 'colspan' => 2));
     foreach ($category as $token => $description) {
       $row = array();
-      $row[] = $token;
+      $row[] = $prefix . $token . $suffix;
       $row[] = $description;
       $rows[] = $row;
     }
@@ -140,6 +147,7 @@ function token_token_values($type, $object = NULL) {
       $values['site-name']    = variable_get('site_name', t('Drupal'));
       $values['site-slogan']  = variable_get('site_slogan', '');
       $values['site-mail']    = variable_get('site_mail', '');
+      $values['site-date']    = format_date(time(), 'short', '', variable_get('date_default_timezone', 0));
       break;
   }
   return $values;
@@ -167,6 +175,7 @@ function token_token_list($type = 'all') {
   $tokens['global']['site-name']    = t('The name of the current Drupal website.');
   $tokens['global']['site-slogan']  = t('The slogan of the current Drupal website.');
   $tokens['global']['site-mail']    = t('The contact email address for the current Drupal website.');
+  $tokens['global']['site-date']    = t("The current date on the site's server");
   return $tokens;
 }
 
