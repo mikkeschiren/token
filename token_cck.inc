@@ -17,7 +17,7 @@ function content_token_values($type, $object = NULL) {
       if (!empty($items)) {
         $function = $field_types[$field['type']]['module'] . '_token_values';
         if (function_exists($function)) {
-          $sub_list = $function('field', $item);
+          $sub_list = $function('field', $items);
           foreach($sub_list as $token => $value) {
             $tokens[$field['field_name'] .'-'. $token] = $value;
           }
@@ -66,12 +66,11 @@ function nodereference_token_list($type = 'all') {
 
 function nodereference_token_values($type, $object = NULL) {
   if ($type == 'field') {
-    $item = $field[0];
-    $node = node_load($item['nid']);
+    $item = $object[0];
 
-    $tokens['nid']   = $node->nid;
-    $tokens['title'] = $node->title;
-    $tokens['link']  = l($node->title, 'node/'.$node->nid);
+    $tokens['nid']   = $item['nid'];
+    $tokens['title'] = strip_tags($item['nid']);
+    $tokens['link']  = $item['view'];
 
     return $tokens;
   }
@@ -92,7 +91,7 @@ function number_token_list($type = 'all') {
 
 function number_token_values($type, $object = NULL) {
   if ($type == 'field') {
-    $item = $field[0];
+    $item = $object[0];
 
     $tokens['raw']       = $item['value'];
     $tokens['formatted'] = $item['view'];
@@ -113,7 +112,7 @@ function text_token_list($type = 'all') {
 
 function text_token_values($type, $object = NULL) {
   if ($type == 'field') {
-    $item = $field[0];
+    $item = $object[0];
     $tokens['text'] = $item['view'];
     return $tokens;
   }
@@ -135,12 +134,11 @@ function userreference_token_list($type = 'all') {
 
 function userreference_token_values($type, $object = NULL) {
   if ($type == 'field') {
-    $item = $field[0];
-    $user = user_load(array('uid' => $item['uid']));
+    $item = $object[0];
 
-    $tokens['uid']   = $user->uid;
-    $tokens['name']  = $user->name;
-    $tokens['link']  = theme_user($user);
+    $tokens['uid']   = $item['uid'];
+    $tokens['name']  = strip_tags($item['view']);
+    $tokens['link']  = $item['view'];
 
     return $tokens;
   }
