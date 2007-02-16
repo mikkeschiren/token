@@ -54,8 +54,11 @@ function token_replace($original, $type = 'global', $object = NULL, $leading = '
 function token_get_values($type = 'global', $object = NULL) {
   static $tokens;
 
-  include_once('token_node.inc');
-  include_once('token_user.inc');
+  include_once(drupal_get_path('module', 'token') . '/token_node.inc');
+  include_once(drupal_get_path('module', 'token') . '/token_user.inc');
+  if (module_exists('content')) {
+    include_once(drupal_get_path('module', 'token') . '/token_cck.inc');
+  }
 
   if (!isset($tokens)) {
     $tokens = array();
@@ -96,8 +99,11 @@ function token_get_values($type = 'global', $object = NULL) {
  * @return An HTML table containing the formatting docs.
  **/
 function theme_token_help($type = 'all', $prefix = '[', $suffix = ']') {
-  include_once('token_node.inc');
-  include_once('token_user.inc');
+  include_once(drupal_get_path('module', 'token') . '/token_node.inc');
+  include_once(drupal_get_path('module', 'token') . '/token_user.inc');
+  if (module_exists('content')) {
+    include_once(drupal_get_path('module', 'token') . '/token_cck.inc');
+  }
 
   $full_list = module_invoke_all('token_list', $type);
   

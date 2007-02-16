@@ -116,30 +116,6 @@ function node_token_list($type = 'all') {
   }
 }
 
-// Two helper functions that generate appropriate tokens for CCK-added fields.
-function content_token_values($type, $object = NULL) {
-  $tokens = array();
-  if ($type == 'node') {
-    $node = $object;
-
-    foreach (content_fields() as $field) {
-      $items = $node->$field['field_name'];
-      $tokens[''. $field['field_name'] .''] = content_format($field['field_name'], $items[0]);
-    }
-  }
-  return $tokens;
-}
-
-function content_token_list($type) {
-  if ($type == 'node' || $token == 'all') {
-    $list = array();
-    foreach (content_fields() as $field) {
-      $list['CCK field'][''. $field['field_name'] .''] = t($field['widget']['label']);
-    }
-    return $list;
-  }
-}
-
 // Handle book nodes.
 function book_token_values($type, $object = NULL) {
   if ($type == 'node') {
