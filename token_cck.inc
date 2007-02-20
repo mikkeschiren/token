@@ -70,7 +70,7 @@ if (module_exists('nodereference')) {
       $item = $object[0];
 
       $tokens['nid']   = $item['nid'];
-      $tokens['title'] = strip_tags($item['nid']);
+      $tokens['title'] = strip_tags($item['view']);
       $tokens['link']  = $item['view'];
 
       return $tokens;
