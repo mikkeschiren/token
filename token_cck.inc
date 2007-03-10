@@ -29,7 +29,7 @@ function content_token_values($type, $object = NULL) {
 }
 
 function content_token_list($type = 'all') {
-  if ($type == 'node' || $token == 'all') {
+  if ($type == 'node' || $type == 'all') {
     $list = array();
     $field_types = _content_field_types();
 
@@ -110,7 +110,8 @@ if (module_exists('text')) {
   function text_token_list($type = 'all') {
     if ($type == 'field' || $type == 'all') {
       $tokens = array();
-      $tokens['node reference']['text'] = t("Text field contents.");
+      $tokens['text']['raw']       = t("Raw, unfiltered text.");
+      $tokens['text']['formatted'] = t("Formatted and filtered text.");
       return $tokens;
     }
   }
@@ -118,7 +119,8 @@ if (module_exists('text')) {
   function text_token_values($type, $object = NULL) {
     if ($type == 'field') {
       $item = $object[0];
-      $tokens['text'] = $item['view'];
+      $tokens['raw']  = $item['value'];
+      $tokens['formatted'] = $item['view'];
       return $tokens;
     }
   }

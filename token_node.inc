@@ -55,13 +55,22 @@ function node_token_values($type, $object = NULL) {
             $vocabulary = taxonomy_get_vocabulary($vid);
             $values['vocab'] = $vocabulary->name;
             $values['vocab-id'] = $vocabulary->name;
+            
+  // The 'catpath' token has been removed, as it caused quite a bit of confusion,
+  // and was a relatively expensive query when the taxonomy tree was deep.
+  //
+  // It existed only to provide forward-compatability with pathauto module, and
+  // for most uses of token.module, it was a relatively useless token -- it exposed
+  // a list of term names formatted as a URL/path string. Once pathauto supports
+  // tokens, *it* should handle this catpath alias as it's the primary consumer.
+  //
+  //          $catpath = '';
+  //          $parents = taxonomy_get_parents_all($term->tid);
+  //          foreach ($parents as $parent) {
+  //            $catpath = $parent->name.'/'.$catpath;
+  //          }
+  //          $values['catpath'] = $catpath;
 
-            $catpath = '';
-            $parents = taxonomy_get_parents_all($term->tid);
-            foreach ($parents as $parent) {
-              $catpath = $parent->name.'/'.$catpath;
-            }
-            $values['catpath'] = $catpath;
             break;
           }
         }
@@ -96,7 +105,9 @@ function node_token_list($type = 'all') {
     $tokens['node']['term-id']        = t("ID of top taxonomy term");
     $tokens['node']['vocab']          = t("Name of top term's vocabulary");
     $tokens['node']['vocab-id']       = t("ID of top term's vocabulary");
-    $tokens['node']['catpath']        = t("Full taxonomy tree for the topmost term");
+
+    // Temporarily disabled -- see notes in node_token_values.
+    // $tokens['node']['catpath']        = t("Full taxonomy tree for the topmost term");
 
     $tokens['node']['yyyy']           = t("Node creation year (four digit)");
     $tokens['node']['yy']             = t("Node creation year (two digit)");
@@ -149,7 +160,7 @@ function book_token_values($type, $object = NULL) {
 }
 
 function book_token_list($type) {
-  if ($type == 'node' || $token == 'all') {
+  if ($type == 'node' || $type == 'all') {
     $list['book']['book'] = t("The title of the node's book parent.");
     $list['book']['book_id'] = t("The id of the node's book parent.");
     $list['book']['bookpath'] = t("The titles of all parents in the node's book hierarchy.");

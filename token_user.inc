@@ -12,18 +12,19 @@ function user_token_values($type, $object = NULL) {
       }
       else {
         global $user;
-        $account = $user;
+        $account = user_load($user->uid);
       }
 
       $values['user']           = $account->uid ? $user->name : variable_get('anonymous', 'Anonymous');
       $values['uid']            = $account->uid;
       $values['mail']           = $account->uid ? $account->mail : '';
-      $values['reg-date']       = $account->uid ? date('F j, Y', $account->created) : '';
+      $values['reg-date']       = $account->uid ? format_date($account->created, 'short') : '';
       $values['reg-since']      = $account->uid ? format_interval($account->created) : '';
-      $values['log-date']       = $account->uid ? date('F j, Y', $account->access) : '';
+      $values['log-date']       = $account->uid ? format_date($account->access, 'short') : '';
       $values['log-since']      = $account->uid ? format_interval($account->access) : '';
-      $values['user-date']      = format_date(time(), 'short', '', $account->timezone);
-      $values['user-edit-url']  = url('user/'. $account->uid .'/edit', NULL, NULL, TRUE);
+      $values['date-in-tz']     = $account->uid ? format_date(time(), 'short', '', $account->timezone) : '';
+      $values['account-url']    = $account->uid ? url("user/$user->uid") : '';
+      $values['account-edit']   = $account->uid ? url("user/$user->uid/edit") : '';
 
       break;
   }
@@ -43,8 +44,9 @@ function user_token_list($type = 'all') {
     $tokens['user']['reg-since']      = t("Days since the user registered");
     $tokens['user']['log-date']       = t("User's last login date");
     $tokens['user']['log-since']      = t("Days since the user's last login");
-    $tokens['user']['user-date']      = t("The current date in the user's timezone");
-    $tokens['user']['user-edit-url']  = t('Account edit URL');
+    $tokens['user']['date-in-tz']     = t("The current date in the user's timezone");
+    $tokens['user']['account-url']    = t("The URL of the user's profile page.");
+    $tokens['user']['account-edit']   = t("The URL the user's account editing page.");
 
     return $tokens;
   }
