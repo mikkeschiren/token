@@ -156,8 +156,8 @@ function _token_get_id($type = 'global', $object = NULL) {
     case 'comment':
       return $object->cid;
     case 'user':
-      return $user->uid;
+      return $object->uid;
     default:
-      return md5(serialize($object));
+      return crc32(serialize($object));
   }
 }
