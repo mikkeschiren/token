@@ -3,7 +3,8 @@
 
 /**
  * Return the value of $original, with all instances of placeholder
- * tokens replaced by their proper values.
+ * tokens replaced by their proper values. To replace mutliple types
+ * at once see token_replace_multiple().
  *
  * @param original
  *  A string, or an array of strings, to perform token substitutions
@@ -28,10 +29,48 @@
  **/
 function token_replace($original, $type = 'global', $object = NULL, $leading = '[', $trailing = ']') {
   $full = token_get_values($type, $object);
-  $tokens = token_prepare_tokens($full->tokens, $leading, $trailing);
-  $values = $full->values;
-  $result = str_replace($tokens, $values, $original);
-  return $result;
+  return _token_replace_tokens($original, $full->tokens, $full->values, $leading, $trailing);
+}
+
+/**
+ * Return the value of $original, with all instances of placeholder
+ * tokens replaced by their proper values. Contrary to token_replace(),
+ * this function supports replacing mutiple types.
+ *
+ * @param original
+ *  A string, or an array of strings, to perform token substitutions
+ *  on.
+ * @param types
+ *   An array of substitution classes and optional objects. The key is
+ *   a flag indicating the class of substitution tokens to use.
+ *   If an object is passed as value, the key should contain the
+ *   object's type. For example, 'node', 'comment', or 'user'. The 
+ *   object will be used for building substitution values. If no type
+ *   is specified, only 'global' site-wide substitution tokens are built.
+ * @param leading
+ *    Character(s) to prepend to the token key before searching for
+ *    matches. Defaults to an open-bracket.
+ * @param trailing
+ *    Character(s) to append to the token key before searching for
+ *    matches. Defaults to a close-bracket.
+ * @return The modified version of $original, with all substitutions
+ *   made.
+ **/
+function token_replace_multiple($original, $types = array('global' => NULL), $leading = '[', $trailing = ']') {
+  $full = new stdClass();
+  $full->tokens = $full->values = array();
+  foreach ($types as $type => $object) {
+    $temp = token_get_values($type, $object);
+    $full->tokens = array_merge($full->tokens, $temp->tokens);
+    $full->values = array_merge($full->values, $temp->values);
+  }
+  return _token_replace_tokens($original, $full->tokens, $full->values, $leading, $trailing);
+}
+
+// Internally used function to replace tokens.
+function _token_replace_tokens($original, $tokens, $values, $leading, $trailing) {
+  $tokens = token_prepare_tokens($tokens, $leading, $trailing);
+  return str_replace($tokens, $values, $original);
 }
 
 /**
@@ -145,7 +184,9 @@ function token_prepare_tokens($tokens = array(), $leading = '[', $trailing = ']'
   return $tokens;
 }
 
-// Internal utility function used for static caching.
+// Internal utility function used for static caching. There are
+// almost certainly better ways to do this, but for the moment it's
+// sufficient.
 function _token_get_id($type = 'global', $object = NULL) {
   if (!isset($object)) {
     return "default";
