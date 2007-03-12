@@ -12,7 +12,7 @@ function user_token_values($type, $object = NULL) {
       }
       else {
         global $user;
-        $account = user_load($user->uid);
+        $account = user_load(array('uid' => $user->uid));
       }
 
       $values['user']           = $account->uid ? $user->name : variable_get('anonymous', 'Anonymous');
