@@ -92,6 +92,25 @@ function _token_replace_tokens($original, $tokens, $values, $leading, $trailing)
  */
 function token_get_values($type = 'global', $object = NULL) {
   static $tokens;
+  static $depth;
+
+  // Simple recursion check. This is to avoid content_view()'s potential
+  // for endless looping when a filter uses tokens, which load the content
+  // view, which calls the filter, which uses tokens, which...
+  if (!isset($depth)) {
+    $depth = 1;
+  }
+  elseif ($depth = 1) {
+    $depth++;
+  }
+  else {
+    // We'll allow things to get two levels deep, but bail out after that
+    // without performing any substitutions.
+    $result = new stdClass();
+    $result->tokens = array();
+    $result->values = array();
+    return $result;
+  }
 
   include_once(drupal_get_path('module', 'token') . '/token_node.inc');
   include_once(drupal_get_path('module', 'token') . '/token_user.inc');
@@ -123,6 +142,8 @@ function token_get_values($type = 'global', $object = NULL) {
   $result = new stdClass();
   $result->tokens = array_keys($all);
   $result->values = array_values($all);
+
+  $depth--;
 
   return $result;
 }
