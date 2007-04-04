@@ -90,9 +90,16 @@ function _token_replace_tokens($original, $tokens, $values, $leading, $trailing)
  *   A keyed array containing the substitution tokens and the substition
  *   values for the passed-in type and object.
  */
-function token_get_values($type = 'global', $object = NULL) {
+function token_get_values($type = 'global', $object = NULL, $flush = FALSE) {
   static $tokens;
   static $depth;
+
+  // Flush the static token cache. Useful for processes that need to slog through
+  // huge numbers of tokens in a single execution cycle. Flushing it will keep
+  // them from burning through memory.
+  if ($flush) {
+    unset $tokens;
+  }
 
   // Simple recursion check. This is to avoid content_view()'s potential
   // for endless looping when a filter uses tokens, which load the content
