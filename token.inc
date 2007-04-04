@@ -98,7 +98,7 @@ function token_get_values($type = 'global', $object = NULL, $flush = FALSE) {
   // huge numbers of tokens in a single execution cycle. Flushing it will keep
   // them from burning through memory.
   if ($flush) {
-    unset $tokens;
+    unset($tokens);
   }
 
   // Simple recursion check. This is to avoid content_view()'s potential
