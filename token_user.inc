@@ -15,7 +15,7 @@ function user_token_values($type, $object = NULL) {
         $account = user_load(array('uid' => $user->uid));
       }
 
-      $values['user']           = $account->uid ? $user->name : variable_get('anonymous', 'Anonymous');
+      $values['user']           = $account->uid ? $account->name : variable_get('anonymous', 'Anonymous');
       $values['uid']            = $account->uid;
       $values['mail']           = $account->uid ? $account->mail : '';
       $values['reg-date']       = $account->uid ? format_date($account->created, 'short') : '';
@@ -23,8 +23,8 @@ function user_token_values($type, $object = NULL) {
       $values['log-date']       = $account->uid ? format_date($account->access, 'short') : '';
       $values['log-since']      = $account->uid ? format_interval($account->access) : '';
       $values['date-in-tz']     = $account->uid ? format_date(time(), 'short', '', $account->timezone) : '';
-      $values['account-url']    = $account->uid ? url("user/$user->uid") : '';
-      $values['account-edit']   = $account->uid ? url("user/$user->uid/edit") : '';
+      $values['account-url']    = $account->uid ? url("user/$account->uid") : '';
+      $values['account-edit']   = $account->uid ? url("user/$account->uid/edit") : '';
 
       break;
   }

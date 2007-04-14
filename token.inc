@@ -97,8 +97,8 @@ function token_get_values($type = 'global', $object = NULL, $flush = FALSE) {
   // Flush the static token cache. Useful for processes that need to slog through
   // huge numbers of tokens in a single execution cycle. Flushing it will keep
   // them from burning through memory.
-  if ($flush) {
-    unset($tokens);
+  if ($flush || !isset($tokens)) {
+    $tokens = array();
   }
 
   // Simple recursion check. This is to avoid content_view()'s potential
@@ -119,15 +119,16 @@ function token_get_values($type = 'global', $object = NULL, $flush = FALSE) {
     return $result;
   }
 
-  include_once(drupal_get_path('module', 'token') . '/token_node.inc');
-  include_once(drupal_get_path('module', 'token') . '/token_user.inc');
+  $path = drupal_get_path('module', 'token');
+  include_once("$path/token_node.inc");
+  include_once("$path/token_user.inc");
   if (module_exists('content')) {
-    include_once(drupal_get_path('module', 'token') . '/token_cck.inc');
+    include_once("$path/token_cck.inc");
+  }
+  if (module_exists('taxonomy')) {
+    include_once("$path/token_taxonomy.inc");
   }
 
-  if (!isset($tokens)) {
-    $tokens = array();
-  }
 
   $id = _token_get_id($type, $object);
   if (isset($tokens[$type][$id])) {

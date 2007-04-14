@@ -29,12 +29,15 @@ function token_init() {
  * @return An HTML table containing the formatting docs.
  **/
 function theme_token_help($type = 'all', $prefix = '[', $suffix = ']') {
-  include_once(drupal_get_path('module', 'token') . '/token_node.inc');
-  include_once(drupal_get_path('module', 'token') . '/token_user.inc');
+  $path = drupal_get_path('module', 'token');
+  include_once("$path/token_node.inc");
+  include_once("$path/token_user.inc");
   if (module_exists('content')) {
-    include_once(drupal_get_path('module', 'token') . '/token_cck.inc');
+    include_once("$path/token_cck.inc");
   }
-
+  if (module_exists('taxonomy')) {
+    include_once("$path/token_taxonomy.inc");
+  }
   $full_list = token_get_list($type);
   
   $headers = array(t('Token'), t('Replacement value'));

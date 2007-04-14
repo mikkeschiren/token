@@ -110,8 +110,10 @@ if (module_exists('text')) {
   function text_token_list($type = 'all') {
     if ($type == 'field' || $type == 'all') {
       $tokens = array();
+
       $tokens['text']['raw']       = t("Raw, unfiltered text.");
       $tokens['text']['formatted'] = t("Formatted and filtered text.");
+
       return $tokens;
     }
   }
