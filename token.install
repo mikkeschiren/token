@@ -1,9 +1,12 @@
-; $Id $
+<?php
+// $Id $
 
 function token_install() {
   db_query("UPDATE {system} SET weight = 10 WHERE name = 'token'");
 }
 
 function token_update_1() {
-  db_query("UPDATE {system} SET weight = 10 WHERE name = 'token'");
+  $ret = array();
+  $ret[] = update_sql("UPDATE {system} SET weight = 10 WHERE name = 'token'");
+  return $ret;
 }
