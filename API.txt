@@ -77,7 +77,7 @@ really deal with. That helps keep things speedy and avoid needlessly
 searching for jillions of replacement tokens. For example:
 
 function my_user_token_values($type, $object = NULL) {
-  if ($type == 'user'):
+  if ($type == 'user') {
     $user = $object;
     $tokens['name']      = $user->name;
     $tokens['mail']      = $user->mail;
@@ -98,7 +98,7 @@ text should be keyed by the $type context your module will use when
 doing the actual replacements. For example:
 
 function my_user_token_list($type = 'all') {
-  if ($type == 'user' || $type == 'all'):
+  if ($type == 'user' || $type == 'all') {
     $tokens['user']['name']      = t("The user's name");
     $tokens['user']['mail']      = t("The user's email address");
     return $tokens;
