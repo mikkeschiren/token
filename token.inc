@@ -2,6 +2,23 @@
 // $Id$
 
 /**
+ * General function to include the files that token relies on for the real work.
+ *
+ **/
+function token_include() {
+  $path = drupal_get_path('module', 'token');
+  include_once("$path/token_node.inc");
+  include_once("$path/token_user.inc");
+  if (module_exists('content')) {
+    include_once("$path/token_cck.inc");
+  }
+  if (module_exists('taxonomy')) {
+    include_once("$path/token_taxonomy.inc");
+  }
+}
+
+
+/**
  * Return the value of $original, with all instances of placeholder
  * tokens replaced by their proper values. To replace mutliple types
  * at once see token_replace_multiple().
@@ -174,6 +191,7 @@ function token_get_values($type = 'global', $object = NULL, $flush = FALSE) {
  *   token type.
  */
 function token_get_list($type = 'all') {
+  token_include();
   $return = array();
   foreach (module_implements('token_list') as $module) {
     $function = $module .'_token_list';
