@@ -54,8 +54,19 @@ values, then call str_replace() yourself.
   token_get_values($type = 'global', $object = NULL)
 
 Pass in the $type and $object as you would with the simpler token_replace()
-function. The return value will be an array with tokens as keys to their own
-replacement values.
+function. The return value will be an object containing one array of tokens
+and one array of values as in this example:
+
+stdClass Object {
+  [tokens] => array(
+    [0] => mytoken1,
+    [1] => mytoken2
+  ),
+  [values] => array(
+    [0] => value1,
+    [1] => value2,
+  )
+}
 
 
 
