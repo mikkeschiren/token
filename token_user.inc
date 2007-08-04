@@ -5,6 +5,7 @@
  * Implementation of hook_token_values()
  */
 function user_token_values($type, $object = NULL) {
+  $values = array();
   switch ($type) {
     case 'user':
       if (isset($object)) {
