@@ -11,7 +11,7 @@ function token_init() {
   // Ensure we are not serving a cached page
   if (function_exists('drupal_set_content')) {
     // we don't do this in hook_menu to ensure the files are already included when
-    include_once(drupal_get_path('module', 'token') . '/token.inc');
+    require_once(drupal_get_path('module', 'token') . '/token.inc');
   }
 }
 

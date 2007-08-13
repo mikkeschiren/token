@@ -17,32 +17,35 @@ function node_token_values($type, $object = NULL) {
 
       $values['author-uid']     = $node->uid;
       $values['author-name']    = $node->name;
+      if (isset($node->created)) {
+	$values['yyyy']           = date('Y', $node->created);
+	$values['yy']             = date('y', $node->created);
+	$values['month']          = date('F', $node->created);
+	$values['mon']            = date('M', $node->created);
+	$values['mm']             = date('m', $node->created);
+	$values['m']              = date('n', $node->created);
+	$values['ww']             = date('W', $node->created);
+	$values['date']           = date('N', $node->created);
+	$values['day']            = date('l', $node->created);
+	$values['ddd']            = date('D', $node->created);
+	$values['dd']             = date('d', $node->created);
+	$values['d']              = date('j', $node->created);
+      }
 
-      $values['yyyy']           = date('Y', $node->created);
-      $values['yy']             = date('y', $node->created);
-      $values['month']          = date('F', $node->created);
-      $values['mon']            = date('M', $node->created);
-      $values['mm']             = date('m', $node->created);
-      $values['m']              = date('n', $node->created);
-      $values['ww']             = date('W', $node->created);
-      $values['date']           = date('N', $node->created);
-      $values['day']            = date('l', $node->created);
-      $values['ddd']            = date('D', $node->created);
-      $values['dd']             = date('d', $node->created);
-      $values['d']              = date('j', $node->created);
-
-      $values['mod-yyyy']       = date('Y', $node->changed);
-      $values['mod-yy']         = date('y', $node->changed);
-      $values['mod-month']      = date('F', $node->changed);
-      $values['mod-mon']        = date('M', $node->changed);
-      $values['mod-mm']         = date('m', $node->changed);
-      $values['mod-m']          = date('n', $node->changed);
-      $values['mod-ww']         = date('W', $node->changed);
-      $values['mod-date']       = date('N', $node->changed);
-      $values['mod-day']        = date('l', $node->changed);
-      $values['mod-ddd']        = date('D', $node->changed);
-      $values['mod-dd']         = date('d', $node->changed);
-      $values['mod-d']          = date('j', $node->changed);
+      if (isset($node->changed)) {
+	$values['mod-yyyy']       = date('Y', $node->changed);
+	$values['mod-yy']         = date('y', $node->changed);
+	$values['mod-month']      = date('F', $node->changed);
+	$values['mod-mon']        = date('M', $node->changed);
+	$values['mod-mm']         = date('m', $node->changed);
+	$values['mod-m']          = date('n', $node->changed);
+	$values['mod-ww']         = date('W', $node->changed);
+	$values['mod-date']       = date('N', $node->changed);
+	$values['mod-day']        = date('l', $node->changed);
+	$values['mod-ddd']        = date('D', $node->changed);
+	$values['mod-dd']         = date('d', $node->changed);
+	$values['mod-d']          = date('j', $node->changed);
+      }
       
       // Now get the menu related information.
       global $_menu;

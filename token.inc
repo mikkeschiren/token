@@ -7,16 +7,16 @@
  **/
 function token_include() {
   $path = drupal_get_path('module', 'token');
-  include_once("$path/token_node.inc");
-  include_once("$path/token_user.inc");
+  require_once("$path/token_node.inc");
+  require_once("$path/token_user.inc");
   if (module_exists('content')) {
-    include_once("$path/token_cck.inc");
+    require_once("$path/token_cck.inc");
   }
   if (module_exists('taxonomy')) {
-    include_once("$path/token_taxonomy.inc");
+    require_once("$path/token_taxonomy.inc");
   }
   if (module_exists('comment')) {
-    include_once("$path/token_comment.inc");
+    require_once("$path/token_comment.inc");
   }
 
 }
@@ -140,17 +140,7 @@ function token_get_values($type = 'global', $object = NULL, $flush = FALSE) {
     return $result;
   }
 
-  $path = drupal_get_path('module', 'token');
-  include_once("$path/token_node.inc");
-  include_once("$path/token_comment.inc");
-  include_once("$path/token_user.inc");
-  if (module_exists('content')) {
-    include_once("$path/token_cck.inc");
-  }
-  if (module_exists('taxonomy')) {
-    include_once("$path/token_taxonomy.inc");
-  }
-
+  token_include();
 
   $id = _token_get_id($type, $object);
   if (isset($tokens[$type][$id])) {
