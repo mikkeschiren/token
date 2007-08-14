@@ -113,7 +113,7 @@ function _token_replace_tokens($original, $tokens, $values, $leading, $trailing)
  */
 function token_get_values($type = 'global', $object = NULL, $flush = FALSE) {
   static $tokens;
-  static $depth;
+  static $running;
 
   // Flush the static token cache. Useful for processes that need to slog through
   // huge numbers of tokens in a single execution cycle. Flushing it will keep
@@ -125,13 +125,7 @@ function token_get_values($type = 'global', $object = NULL, $flush = FALSE) {
   // Simple recursion check. This is to avoid content_view()'s potential
   // for endless looping when a filter uses tokens, which load the content
   // view, which calls the filter, which uses tokens, which...
-  if (!isset($depth)) {
-    $depth = 1;
-  }
-  elseif ($depth = 1) {
-    $depth++;
-  }
-  else {
+  if ($running) {
     // We'll allow things to get two levels deep, but bail out after that
     // without performing any substitutions.
     $result = new stdClass();
@@ -139,6 +133,8 @@ function token_get_values($type = 'global', $object = NULL, $flush = FALSE) {
     $result->values = array();
     return $result;
   }
+  
+  $running = TRUE;
 
   token_include();
 
@@ -163,7 +159,7 @@ function token_get_values($type = 'global', $object = NULL, $flush = FALSE) {
   $result->tokens = array_keys($all);
   $result->values = array_values($all);
 
-  $depth--;
+  $running = FALSE;
 
   return $result;
 }
