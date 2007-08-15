@@ -53,7 +53,7 @@ function node_token_values($type, $object = NULL) {
       $placeholders = array();
       $mid = token_menu_get_mid('node/'.$node->nid);
       
-      while ($mid && $_menu['visible'][$mid]) {
+      while ($mid && $_menu['visible'][$mid] && $_menu['visible'][$mid]['pid'] != 0) {
         array_unshift($trail, $_menu['visible'][$mid]['title']);
         $mid = $_menu['visible'][$mid]['pid'];
       }
