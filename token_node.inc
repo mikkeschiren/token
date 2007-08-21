@@ -45,7 +45,7 @@ function node_token_values($type, $object = NULL) {
 
       // And now taxonomy, which is a bit more work. This code is adapted from
       // pathauto's handling code; it's intended for compatability with it.
-      if (module_exists('taxonomy') && is_array($node->taxonomy) && count($node->taxonomy) > 0) {
+      if (module_exist('taxonomy') && is_array($node->taxonomy) && count($node->taxonomy) > 0) {
         foreach ($node->taxonomy as $term) {
           if ($term) {
             $values['term'] = $term->name;
