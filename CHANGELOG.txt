@@ -1,0 +1,7 @@
+
+2007-August-15:
+[menupath] token no longer includes the top level.  If you need the previous 
+	   behavior please use [menu][menupath] to get the same effect.
+
+Before 2007-August-15
+Lots of stuff happened before we had a CHANGELOG.txt.

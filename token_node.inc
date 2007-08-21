@@ -89,7 +89,7 @@ function node_token_values($type, $object = NULL) {
             if(!empty($vid)) {
               $vocabulary = taxonomy_get_vocabulary($vid);
               $values['vocab'] = $vocabulary->name;
-              $values['vocab-id'] = $vocabulary->name;
+              $values['vocab-id'] = $vocabulary->vid;
             }
             
   // The 'catpath' (and 'cat') tokens have been removed, as they caused quite a bit of confusion,

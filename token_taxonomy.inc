@@ -27,7 +27,7 @@ function taxonomy_token_values($type, $object = NULL) {
  */
 function taxonomy_token_list($type = 'all') {
   if ($type == 'taxonomy' || $type == 'all') {
-    $tokens['taxonomy']['tid'] = t("The id number of the category's parent vocabulary.");
+    $tokens['taxonomy']['vid'] = t("The id number of the category's parent vocabulary.");
     $tokens['taxonomy']['vocab'] = t("The vocabulary that the page's first category belongs to.");
     $tokens['taxonomy']['cat'] = t('The name of the category.');
     $tokens['taxonomy']['tid'] = t('The id number of the category.');
