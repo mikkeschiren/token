@@ -48,8 +48,8 @@ function token_include() {
  * @return The modified version of $original, with all substitutions
  *   made.
  **/
-function token_replace($original, $type = 'global', $object = NULL, $leading = '[', $trailing = ']') {
-  $full = token_get_values($type, $object);
+function token_replace($original, $type = 'global', $object = NULL, $leading = '[', $trailing = ']', $options = array()) {
+  $full = token_get_values($type, $object, FALSE, $options);
   return _token_replace_tokens($original, $full->tokens, $full->values, $leading, $trailing);
 }
 
@@ -77,11 +77,11 @@ function token_replace($original, $type = 'global', $object = NULL, $leading = '
  * @return The modified version of $original, with all substitutions
  *   made.
  **/
-function token_replace_multiple($original, $types = array('global' => NULL), $leading = '[', $trailing = ']') {
+function token_replace_multiple($original, $types = array('global' => NULL), $leading = '[', $trailing = ']', $options = array()) {
   $full = new stdClass();
   $full->tokens = $full->values = array();
   foreach ($types as $type => $object) {
-    $temp = token_get_values($type, $object);
+    $temp = token_get_values($type, $object, FALSE, $options);
     $full->tokens = array_merge($full->tokens, $temp->tokens);
     $full->values = array_merge($full->values, $temp->values);
   }
@@ -111,7 +111,7 @@ function _token_replace_tokens($original, $tokens, $values, $leading, $trailing)
  *   A keyed array containing the substitution tokens and the substition
  *   values for the passed-in type and object.
  */
-function token_get_values($type = 'global', $object = NULL, $flush = FALSE) {
+function token_get_values($type = 'global', $object = NULL, $flush = FALSE, $options = array()) {
   static $tokens;
   static $running;
 
@@ -143,7 +143,7 @@ function token_get_values($type = 'global', $object = NULL, $flush = FALSE) {
     $tmp_tokens = $tokens[$type][$id];
   }
   else {
-    $tmp_tokens = module_invoke_all('token_values', $type, $object);
+    $tmp_tokens = module_invoke_all('token_values', $type, $object, $options);
     $tokens[$type][$id] = $tmp_tokens;
   }
 

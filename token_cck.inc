@@ -3,11 +3,11 @@
 
 
 // Two helper functions that generate appropriate tokens for CCK-added fields.
-function content_token_values($type, $object = NULL) {
+function content_token_values($type, $object = NULL, $options = array()) {
   $tokens = array();
   if ($type == 'node') {
     $node = $object;
-    content_view($node);
+    content_view($node, isset($options['teaser']) ? $options['teaser'] : 0);
 
     $field_types = _content_field_types();
 
