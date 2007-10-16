@@ -65,7 +65,7 @@ if (module_exists('nodereference')) {
     }
   }
 
-  function nodereference_token_values($type, $object = NULL) {
+  function nodereference_token_values($type, $object = NULL, $options = array()) {
     if ($type == 'field') {
       $item = $object[0];
 
@@ -92,7 +92,7 @@ if (module_exists('number')) {
     }
   }
 
-  function number_token_values($type, $object = NULL) {
+  function number_token_values($type, $object = NULL, $options = array()) {
     if ($type == 'field') {
       $item = $object[0];
 
@@ -118,7 +118,7 @@ if (module_exists('text')) {
     }
   }
 
-  function text_token_values($type, $object = NULL) {
+  function text_token_values($type, $object = NULL, $options = array()) {
     if ($type == 'field') {
       $item = $object[0];
       $tokens['raw']  = $item['value'];
@@ -142,7 +142,7 @@ if (module_exists('userreference')) {
     }
   }
 
-  function userreference_token_values($type, $object = NULL) {
+  function userreference_token_values($type, $object = NULL, $options = array()) {
     if ($type == 'field') {
       $item = $object[0];
 
@@ -169,7 +169,7 @@ if (module_exists('link')) {
     }
   }
 
-  function link_token_values($type, $object = NULL) {
+  function link_token_values($type, $object = NULL, $options = array()) {
     if ($type == 'field') {
       $item = $object[0];
 
@@ -202,7 +202,7 @@ if (module_exists('imagefield')) {
     }
   }
 
-  function imagefield_token_values($type, $object = NULL) {
+  function imagefield_token_values($type, $object = NULL, $options = array()) {
     if ($type == 'field') {
       $item = $object[0];
 
@@ -249,7 +249,7 @@ if (module_exists('date')) {
     }
   }
 
-  function date_token_values($type, $object = NULL) {
+  function date_token_values($type, $object = NULL, $options = array()) {
     if ($type == 'field') {
       include_once(drupal_get_path('module', 'date') .'/date.inc');
       $item = $object[0];
