@@ -13,6 +13,7 @@ function node_token_values($type, $object = NULL) {
       $values['type']           = $node->type;
       $values['type-name']      = node_get_types('name', $node->type);
       $values['title']          = check_plain($node->title);
+      $values['title-raw']          = $node->title;
 
       $values['author-uid']     = $node->uid;
       $values['author-name']    = $node->name;
@@ -48,12 +49,14 @@ function node_token_values($type, $object = NULL) {
       if (module_exist('taxonomy') && is_array($node->taxonomy) && count($node->taxonomy) > 0) {
         foreach ($node->taxonomy as $term) {
           if ($term) {
-            $values['term'] = $term->name;
+            $values['term'] = check_plain($term->name);
+            $values['term-raw'] = $term->name;
             $values['term-id'] = $term->tid;
 
             $vid = $term->vid;
             $vocabulary = taxonomy_get_vocabulary($vid);
-            $values['vocab'] = $vocabulary->name;
+            $values['vocab'] = check_plain($vocabulary->name);
+            $values['vocab-raw'] = $vocabulary->name;
             $values['vocab-id'] = $vocabulary->name;
 
             $catpath = '';
@@ -68,8 +71,10 @@ function node_token_values($type, $object = NULL) {
       } 
       else {
         $values['term'] = '';
+        $values['term-raw'] = '';
         $values['term-id'] = '';
         $values['vocab'] = '';
+        $values['vocab-raw'] = '';
         $values['vocab-id'] = '';
         $values['catpath'] = '';
       }
@@ -88,13 +93,16 @@ function node_token_list($type = 'all') {
     $tokens['node']['type']           = t('Node type');
     $tokens['node']['type-name']      = t('Node type (user-friendly version)');
     $tokens['node']['title']          = t('Node title');
+    $tokens['node']['title-raw']      = t('Unfiltered node title. WARNING - raw user input.');
 
     $tokens['node']['author-uid']     = t("Node author's user id");
     $tokens['node']['author-name']    = t("Node author's user name");
 
     $tokens['node']['term']           = t("Name of top taxonomy term");
+    $tokens['node']['term-raw']       = t("Unfiltered name of top taxonomy term. WARNING - raw user input.");
     $tokens['node']['term-id']        = t("ID of top taxonomy term");
     $tokens['node']['vocab']          = t("Name of top term's vocabulary");
+    $tokens['node']['vocab-raw']      = t("Unfiltered name of top term's vocabulary. WARNING - raw user input.");
     $tokens['node']['vocab-id']       = t("ID of top term's vocabulary");
     $tokens['node']['catpath']        = t("Full taxonomy tree for the topmost term");
 
@@ -149,24 +157,31 @@ function book_token_values($type, $object = NULL) {
     if ($node->parent) {
       $path = book_location($node);
       $tokens['book'] = check_plain($path[0]->title);
+      $tokens['book-raw'] = $path[0]->title;
       $tokens['book_id'] = $node->parent;
 
       $bookhierarchy = book_location($node);
+
       $bookpath = '';
+      $bookpath_raw = '';
       foreach ($bookhierarchy as $bookelement) {
         if ($bookpath == '') {
           $bookpath = check_plain($bookelement->title);
+          $bookpath_raw = $bookelement->title;
         } 
         else {
           $bookpath = $bookpath . '/' . check_plain($bookelement->title);
+          $bookpath_raw = $bookpath_raw . '/' . $bookelement->title;
         }
       }
       $tokens['bookpath'] = $bookpath;
+      $tokens['bookpath-raw'] = $bookpath_raw;
     } 
     else {
       $tokens['book'] = '';
       $tokens['book_id'] = '';
       $tokens['bookpath'] = '';
+      $tokens['bookpath-raw'] = '';
     }
     return $tokens;
   }
@@ -175,8 +190,10 @@ function book_token_values($type, $object = NULL) {
 function book_token_list($type) {
   if ($type == 'node' || $token == 'all') {
     $list['book']['book'] = t("The title of the node's book parent.");
+    $list['book']['book-raw']       = t("The unfiltered title of the node's book parent. WARNING - raw user input.");
     $list['book']['book_id'] = t("The id of the node's book parent.");
     $list['book']['bookpath'] = t("The titles of all parents in the node's book hierarchy.");
+    $list['book']['bookpath-raw']   = t("The unfiltered titles of all parents in the node's book hierarchy. WARNING - raw user input.");
     return $list;
   }
 }

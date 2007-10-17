@@ -12,6 +12,9 @@ elaborate and bizarre UIs for configuring the patterns via the browser,
 it's most useful to give users a set of 'placeholder' tokens to place in
 their text 
 
+Security note: For tokens which include user input, users and modules
+expect to see both a ['token-name'] and a ['token-name-raw'] value.
+
 
 
 Providing Placeholder Tokens
@@ -68,3 +71,12 @@ values, then call str_replace() yourself.
 Pass in the $type and $object as you would with the simpler token_replace()
 function. The return value will be an array with tokens as keys to their own
 replacement values.
+
+
+
+Security Note
+========
+If  use any of the tokens in the ['raw'] sub-array then please note that these 
+are unfiltered values which could conceivably contain XSS attacks or other 
+malicious data.  Your module should then provide it's own filtering to ensure the 
+safety of site users.
