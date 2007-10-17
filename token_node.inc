@@ -10,14 +10,15 @@ function node_token_values($type, $object = NULL, $options = array()) {
     case 'node':
       $node = $object;
 
-      $values['nid']            = $node->nid;
-      $values['type']           = $node->type;
-      $values['type-name']      = node_get_types('name', $node->type);
-      $values['title']          = check_plain($node->title);
-      $values['title-raw']      = $node->title;
+      $values['nid']              = $node->nid;
+      $values['type']             = $node->type;
+      $values['type-name']        = node_get_types('name', $node->type);
+      $values['title']            = check_plain($node->title);
+      $values['title-raw']        = $node->title;
 
-      $values['author-uid']     = $node->uid;
-      $values['author-name']    = $node->name;
+      $values['author-uid']       = $node->uid;
+      $values['author-name']      = check_plain($node->name);
+      $values['author-name-raw']  = $node->name;
       if (isset($node->created)) {
 	$values['yyyy']           = date('Y', $node->created);
 	$values['yy']             = date('y', $node->created);
@@ -155,6 +156,7 @@ function node_token_list($type = 'all') {
 
     $tokens['node']['author-uid']     = t("Node author's user id");
     $tokens['node']['author-name']    = t("Node author's user name");
+    $tokens['node']['author-name-raw']    = t("Node author's user name. WARNING - raw user input.");
 
     $tokens['node']['term']           = t("Name of top taxonomy term");
     $tokens['node']['term-raw']       = t("Unfiltered name of top taxonomy term. WARNING - raw user input.");
