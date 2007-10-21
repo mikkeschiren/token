@@ -20,33 +20,33 @@ function node_token_values($type, $object = NULL, $options = array()) {
       $values['author-name']      = check_plain($node->name);
       $values['author-name-raw']  = $node->name;
       if (isset($node->created)) {
-	$values['yyyy']           = date('Y', $node->created);
-	$values['yy']             = date('y', $node->created);
-	$values['month']          = date('F', $node->created);
-	$values['mon']            = date('M', $node->created);
-	$values['mm']             = date('m', $node->created);
-	$values['m']              = date('n', $node->created);
-	$values['ww']             = date('W', $node->created);
-	$values['date']           = date('N', $node->created);
-	$values['day']            = date('l', $node->created);
-	$values['ddd']            = date('D', $node->created);
-	$values['dd']             = date('d', $node->created);
-	$values['d']              = date('j', $node->created);
+        $values['yyyy']           = date('Y', $node->created);
+        $values['yy']             = date('y', $node->created);
+        $values['month']          = date('F', $node->created);
+        $values['mon']            = date('M', $node->created);
+        $values['mm']             = date('m', $node->created);
+        $values['m']              = date('n', $node->created);
+        $values['ww']             = date('W', $node->created);
+        $values['date']           = date('N', $node->created);
+        $values['day']            = date('l', $node->created);
+        $values['ddd']            = date('D', $node->created);
+        $values['dd']             = date('d', $node->created);
+        $values['d']              = date('j', $node->created);
       }
 
       if (isset($node->changed)) {
-	$values['mod-yyyy']       = date('Y', $node->changed);
-	$values['mod-yy']         = date('y', $node->changed);
-	$values['mod-month']      = date('F', $node->changed);
-	$values['mod-mon']        = date('M', $node->changed);
-	$values['mod-mm']         = date('m', $node->changed);
-	$values['mod-m']          = date('n', $node->changed);
-	$values['mod-ww']         = date('W', $node->changed);
-	$values['mod-date']       = date('N', $node->changed);
-	$values['mod-day']        = date('l', $node->changed);
-	$values['mod-ddd']        = date('D', $node->changed);
-	$values['mod-dd']         = date('d', $node->changed);
-	$values['mod-d']          = date('j', $node->changed);
+        $values['mod-yyyy']       = date('Y', $node->changed);
+        $values['mod-yy']         = date('y', $node->changed);
+        $values['mod-month']      = date('F', $node->changed);
+        $values['mod-mon']        = date('M', $node->changed);
+        $values['mod-mm']         = date('m', $node->changed);
+        $values['mod-m']          = date('n', $node->changed);
+        $values['mod-ww']         = date('W', $node->changed);
+        $values['mod-date']       = date('N', $node->changed);
+        $values['mod-day']        = date('l', $node->changed);
+        $values['mod-ddd']        = date('D', $node->changed);
+        $values['mod-dd']         = date('d', $node->changed);
+        $values['mod-d']          = date('j', $node->changed);
       }
       
       // Now get the menu related information.
@@ -106,22 +106,14 @@ function node_token_values($type, $object = NULL, $options = array()) {
               $values['vocab-raw'] = $vocabulary->name;
               $values['vocab-id'] = $vocabulary->vid;
             }
-            
-  // The 'catpath' (and 'cat') tokens have been removed, as they caused quite a bit of confusion,
-  // and the catpath was a relatively expensive query when the taxonomy tree was deep.
-  //
-  // It existed only to provide forward-compatability with pathauto module, and
-  // for most uses of token.module, it was a relatively useless token -- it exposed
-  // a list of term names formatted as a URL/path string. Once pathauto supports
-  // tokens, *it* should handle this catpath alias as it's the primary consumer.
-  //
-  //          $catpath = '';
-  //          $parents = taxonomy_get_parents_all($term->tid);
-  //          foreach ($parents as $parent) {
-  //            $catpath = $parent->name.'/'.$catpath;
-  //          }
-  //          $values['catpath'] = $catpath;
 
+            // The 'catpath' (and 'cat') tokens have been removed, as they caused quite a bit of confusion,
+            // and the catpath was a relatively expensive query when the taxonomy tree was deep.
+            //
+            // It existed only to provide forward-compatability with pathauto module, and
+            // for most uses of token.module, it was a relatively useless token -- it exposed
+            // a list of term names formatted as a URL/path string. Once pathauto supports
+            // tokens, *it* should handle this catpath alias as it's the primary consumer.
             break;
           }
         }
