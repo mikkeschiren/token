@@ -68,14 +68,15 @@ function node_token_values($type, $object = NULL, $options = array()) {
         $mid = $_menu['visible'][$mid]['pid'];
       }
 
-
       if (isset($trail)) {
         $values['menupath']     = implode('/', $trail);
         $values['menupath-raw'] = implode('/', $trail_raw);
-        $values['menu']         = array_shift($trail);
+        $values['menu']         = check_plain($_menu['visible'][$mid]['title']);
+        $values['menu-raw']     = $_menu['visible'][$mid]['title'];
       }
       else {
         $values['menu']         = '';
+        $values['menu-raw']     = '';
         $values['menupath']     = '';
         $values['menupath-raw'] = '';
       }
@@ -175,6 +176,7 @@ function node_token_list($type = 'all') {
     $tokens['node']['mod-????']       = t('All tokens for node creation dates can also be used with with the "mod-" prefix; doing so will use the modification date rather than the creation date.');
 
     $tokens['node']['menu']           = t("The name of the menu the node belongs to.");
+    $tokens['node']['menu-raw']       = t("The name of the menu the node belongs to. WARNING - raw user input.");
     $tokens['node']['menupath']       = t("The menu path (as reflected in the breadcrumb), not including Home or [menu]. Separated by /.");
     $tokens['node']['menupath-raw']   = t("The unfiltered menu path (as reflected in the breadcrumb), not including Home or [menu]. Separated by /. WARNING - raw user input.");
     return $tokens;
