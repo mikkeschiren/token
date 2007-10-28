@@ -15,38 +15,39 @@ function node_token_values($type, $object = NULL, $options = array()) {
       $values['type-name']        = node_get_types('name', $node->type);
       $values['title']            = check_plain($node->title);
       $values['title-raw']        = $node->title;
-
       $values['author-uid']       = $node->uid;
       $values['author-name']      = check_plain($node->name);
       $values['author-name-raw']  = $node->name;
       if (isset($node->created)) {
-        $values['yyyy']           = date('Y', $node->created);
-        $values['yy']             = date('y', $node->created);
-        $values['month']          = date('F', $node->created);
-        $values['mon']            = date('M', $node->created);
-        $values['mm']             = date('m', $node->created);
-        $values['m']              = date('n', $node->created);
-        $values['ww']             = date('W', $node->created);
-        $values['date']           = date('N', $node->created);
-        $values['day']            = date('l', $node->created);
-        $values['ddd']            = date('D', $node->created);
-        $values['dd']             = date('d', $node->created);
-        $values['d']              = date('j', $node->created);
+        $date = (int)$node->created;
+        $values['yyyy']           = date('Y', $date);
+        $values['yy']             = date('y', $date);
+        $values['month']          = date('F', $date);
+        $values['mon']            = date('M', $date);
+        $values['mm']             = date('m', $date);
+        $values['m']              = date('n', $date);
+        $values['ww']             = date('W', $date);
+        $values['date']           = date('N', $date);
+        $values['day']            = date('l', $date);
+        $values['ddd']            = date('D', $date);
+        $values['dd']             = date('d', $date);
+        $values['d']              = date('j', $date);
       }
 
       if (isset($node->changed)) {
-        $values['mod-yyyy']       = date('Y', $node->changed);
-        $values['mod-yy']         = date('y', $node->changed);
-        $values['mod-month']      = date('F', $node->changed);
-        $values['mod-mon']        = date('M', $node->changed);
-        $values['mod-mm']         = date('m', $node->changed);
-        $values['mod-m']          = date('n', $node->changed);
-        $values['mod-ww']         = date('W', $node->changed);
-        $values['mod-date']       = date('N', $node->changed);
-        $values['mod-day']        = date('l', $node->changed);
-        $values['mod-ddd']        = date('D', $node->changed);
-        $values['mod-dd']         = date('d', $node->changed);
-        $values['mod-d']          = date('j', $node->changed);
+        $date = (int)$node->changed;
+        $values['mod-yyyy']       = date('Y', $date);
+        $values['mod-yy']         = date('y', $date);
+        $values['mod-month']      = date('F', $date);
+        $values['mod-mon']        = date('M', $date);
+        $values['mod-mm']         = date('m', $date);
+        $values['mod-m']          = date('n', $date);
+        $values['mod-ww']         = date('W', $date);
+        $values['mod-date']       = date('N', $date);
+        $values['mod-day']        = date('l', $date);
+        $values['mod-ddd']        = date('D', $date);
+        $values['mod-dd']         = date('d', $date);
+        $values['mod-d']          = date('j', $date);
       }
       
       // Now get the menu related information.
@@ -85,6 +86,7 @@ function node_token_values($type, $object = NULL, $options = array()) {
       // pathauto's handling code; it's intended for compatability with it.
       if (module_exists('taxonomy') && !empty($node->taxonomy) && is_array($node->taxonomy)) {
         foreach ($node->taxonomy as $term) {
+          $original_term = $term;
           if ((object)$term) {
             // With freetagging it's somewhat hard to get the tid, vid, name values
             // Rather than duplicating taxonomy.module code here you should make sure your calling module
@@ -96,6 +98,14 @@ function node_token_values($type, $object = NULL, $options = array()) {
               $term->vid = $vid;
             }
 
+            // Ok, if we still don't have a term name maybe this is a pre-taxonomy submit node
+            // So if it's a number we can get data from it
+            if(!isset($term->name) && is_array($original_term)) {
+              $tid = array_shift($original_term);
+              if (is_numeric($tid)) {
+                $term = taxonomy_get_term($tid);
+              }
+            }
             $values['term'] = check_plain($term->name);
             $values['term-raw'] = $term->name;
             $values['term-id'] = $term->tid;
