@@ -15,10 +15,10 @@ function content_token_values($type, $object = NULL, $options = array()) {
       
       $items = $node->$field['field_name'];
       if (!empty($items)) {
-        $function = $field_types[$field['type']]['module'] . '_token_values';
+        $function = $field_types[$field['type']]['module'] .'_token_values';
         if (function_exists($function)) {
           $sub_list = $function('field', $items);
-          foreach($sub_list as $token => $value) {
+          foreach ($sub_list as $token => $value) {
             $tokens[$field['field_name'] .'-'. $token] = $value;
           }
         }
@@ -35,7 +35,7 @@ function content_token_list($type = 'all') {
 
     foreach (content_fields() as $field) {
       $sub_list = array();
-      $function = $field_types[$field['type']]['module'] . '_token_list';
+      $function = $field_types[$field['type']]['module'] .'_token_list';
       if (function_exists($function)) {
         $sub_list = $function('field');
         foreach ($sub_list as $category => $token_list) {

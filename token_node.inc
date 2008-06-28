@@ -2,7 +2,20 @@
 // $Id$
 
 /**
- * Implementation of hook_token_values()
+ * @file
+ * Implementations of token module hooks for the core node and book modules.
+ *
+ * The token module requires specific hooks to be added to modules
+ * so that those modules can return data about their objects to the
+ * token API.  Until and unless token becomes a part of core, the
+ * implementations of the token hooks for core modules are provided
+ * in the token module itself.
+ *
+ * @ingroup token
+ */
+
+/**
+ * Implementation of hook_token_values().
  */
 function node_token_values($type, $object = NULL, $options = array()) {
   $values = array();
@@ -54,7 +67,7 @@ function node_token_values($type, $object = NULL, $options = array()) {
       global $_menu;
       $trail = array();
       $trail_raw = array();
-      $original_mid = token_menu_get_mid('node/'.$node->nid);
+      $original_mid = token_menu_get_mid('node/'. $node->nid);
       
       $mid = $original_mid;
       while ($mid && $_menu['visible'][$mid] && $_menu['visible'][$mid]['pid'] != 0) {
@@ -90,20 +103,20 @@ function node_token_values($type, $object = NULL, $options = array()) {
           if ((object)$term) {
             // With freetagging it's somewhat hard to get the tid, vid, name values
             // Rather than duplicating taxonomy.module code here you should make sure your calling module
-            // has a weight of at least 1 which will run after taxonomy has saved the data which allows us to 
+            // has a weight of at least 1 which will run after taxonomy has saved the data which allows us to
             // pull it out of the db here.
             if (!isset($term->name) || !isset($term->tid)) {
-              $vid = db_result(db_query("SELECT t.vid FROM {term_node} r INNER JOIN {term_data} t ON r.tid = t.tid INNER JOIN {vocabulary} v ON t.vid = v.vid WHERE r.nid = %d ORDER BY v.weight, t.weight, t.name LIMIT 1", $object->nid));
+              $vid = db_result(db_query_range("SELECT t.vid FROM {term_node} r INNER JOIN {term_data} t ON r.tid = t.tid INNER JOIN {vocabulary} v ON t.vid = v.vid WHERE r.nid = %d ORDER BY v.weight, t.weight, t.name", $object->nid, 0, 1));
               if (!$vid) {
                 continue;
               }
-              $term = db_fetch_object(db_query("SELECT t.tid, t.name FROM {term_data} t INNER JOIN {term_node} r ON r.tid = t.tid WHERE t.vid = %d AND r.nid = %d ORDER BY weight LIMIT 1", $vid, $object->nid));
+              $term = db_fetch_object(db_query_range("SELECT t.tid, t.name FROM {term_data} t INNER JOIN {term_node} r ON r.tid = t.tid WHERE t.vid = %d AND r.nid = %d ORDER BY weight", $vid, $object->nid, 0, 1));
               $term->vid = $vid;
             }
 
             // Ok, if we still don't have a term name maybe this is a pre-taxonomy submit node
             // So if it's a number we can get data from it
-            if(!isset($term->name) && is_array($original_term)) {
+            if (!isset($term->name) && is_array($original_term)) {
               $tid = array_shift($original_term);
               if (is_numeric($tid)) {
                 $term = taxonomy_get_term($tid);
@@ -114,7 +127,7 @@ function node_token_values($type, $object = NULL, $options = array()) {
             $values['term-id'] = $term->tid;
             $vid = $term->vid;
 
-            if(!empty($vid)) {
+            if (!empty($vid)) {
               $vocabulary = taxonomy_get_vocabulary($vid);
               $values['vocab'] = check_plain($vocabulary->name);
               $values['vocab-raw'] = $vocabulary->name;
@@ -131,8 +144,8 @@ function node_token_values($type, $object = NULL, $options = array()) {
             break;
           }
         }
-      } 
-      // It's possible to leave that block and still not have good data.  
+      }
+      // It's possible to leave that block and still not have good data.
       // So, we test for these and if not set, set them.
       if (!isset($values['term'])) {
         $values['term'] = '';
@@ -150,7 +163,7 @@ function node_token_values($type, $object = NULL, $options = array()) {
 }
 
 /**
- * Implementation of hook_token_list()
+ * Implementation of hook_token_list().
  */
 function node_token_list($type = 'all') {
   if ($type == 'node' || $type == 'all') {
@@ -215,10 +228,10 @@ function book_token_values($type, $object = NULL, $options = array()) {
         if ($bookpath == '') {
           $bookpath = check_plain($bookelement->title);
           $bookpath_raw = $bookelement->title;
-        } 
+        }
         else {
-          $bookpath = $bookpath . '/' . check_plain($bookelement->title);
-          $bookpath_raw = $bookpath_raw . '/' . $bookelement->title;
+          $bookpath = $bookpath .'/'. check_plain($bookelement->title);
+          $bookpath_raw = $bookpath_raw .'/'. $bookelement->title;
         }
       }
       $tokens['bookpath'] = $bookpath;
