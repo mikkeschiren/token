@@ -214,7 +214,14 @@ function book_token_values($type, $object = NULL, $options = array()) {
   if ($type == 'node') {
     $node = $object;
 
+    // Initialize some variables to empty.
     $tokens = array();
+    $tokens['book'] = '';
+    $tokens['book-raw'] = '';
+    $tokens['book_id'] = '';
+    $tokens['bookpath'] = '';
+    $tokens['bookpath-raw'] = '';
+
     if (!empty($node->parent)) {
       $path = book_location($node);
       $tokens['book'] = check_plain($path[0]->title);
@@ -237,12 +244,7 @@ function book_token_values($type, $object = NULL, $options = array()) {
       $tokens['bookpath'] = $bookpath;
       $tokens['bookpath-raw'] = $bookpath_raw;
     } 
-    else {
-      $tokens['book'] = '';
-      $tokens['book_id'] = '';
-      $tokens['bookpath'] = '';
-      $tokens['bookpath-raw'] = '';
-    }
+
     return $tokens;
   }
 }
