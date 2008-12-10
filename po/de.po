@@ -14,7 +14,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: German translation of token\n"
 "POT-Creation-Date: 2008-12-10 13:43+0100\n"
-"PO-Revision-Date: 2008-12-10 14:46+0100\n"
+"PO-Revision-Date: 2008-12-10 21:08+0100\n"
 "Last-Translator: Alexander Haß\n"
 "Language-Team: German\n"
 "MIME-Version: 1.0\n"
@@ -122,51 +122,51 @@ msgstr "Der unbearbeitete Datumszeitstempel."
 
 #: token_cck.inc:233
 msgid "Date year (four digit)"
-msgstr "Jahr (vierstellig)"
+msgstr "Datum: Jahr (vierstellig)"
 
 #: token_cck.inc:234
 msgid "Date year (two digit)"
-msgstr "Jahr (zweistellig)"
+msgstr "Datum: Jahr (zweistellig)"
 
 #: token_cck.inc:235
 msgid "Date month (full word)"
-msgstr "Monat (vollständiges Wort)"
+msgstr "Datum: Monat (vollständiges Wort)"
 
 #: token_cck.inc:236
 msgid "Date month (abbreviated)"
-msgstr "Monat (abgekürzt)"
+msgstr "Datum: Monat (abgekürzt)"
 
 #: token_cck.inc:237
 msgid "Date month (two digit, zero padded)"
-msgstr "Monat (zweistellig, mit 0 aufgefüllt)"
+msgstr "Datum: Monat (zweistellig, mit 0 aufgefüllt)"
 
 #: token_cck.inc:238
 msgid "Date month (one or two digit)"
-msgstr "Monat (ein- oder zweistellig)"
+msgstr "Datum: Monat (ein- oder zweistellig)"
 
 #: token_cck.inc:239
 msgid "Date week (two digit)"
-msgstr "Woche (zweistellig)"
+msgstr "Datum: Woche (zweistellig)"
 
 #: token_cck.inc:240
 msgid "Date date (day of month)"
-msgstr "Monatstag (Tag des Monats)"
+msgstr "Datum: Monatstag (Tag des Monats)"
 
 #: token_cck.inc:241
 msgid "Date day (full word)"
-msgstr "Tag (vollständiges Wort)"
+msgstr "Datum: Tag (vollständiges Wort)"
 
 #: token_cck.inc:242
 msgid "Date day (abbreviation)"
-msgstr "Tag (abgekürzt)"
+msgstr "Datum: Tag (abgekürzt)"
 
 #: token_cck.inc:243
 msgid "Date day (two digit, zero-padded)"
-msgstr "Tag (zweistellig, mit 0 aufgefüllt)"
+msgstr "Datum: Tag (zweistellig, mit 0 aufgefüllt)"
 
 #: token_cck.inc:244
 msgid "Date day (one or two digit)"
-msgstr "Tag (ein- oder zweistellig)"
+msgstr "Datum: Tag (ein- oder zweistellig)"
 
 #: token_cck.inc:246
 #, fuzzy
