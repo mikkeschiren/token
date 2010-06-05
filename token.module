@@ -27,7 +27,7 @@
 function theme_token_help($type = 'all', $prefix = '[', $suffix = ']') {
   token_include();
   $full_list = token_get_list($type);
-  
+
   $headers = array(t('Token'), t('Replacement value'));
   $rows = array();
   foreach ($full_list as $key => $category) {
@@ -45,7 +45,7 @@ function theme_token_help($type = 'all', $prefix = '[', $suffix = ']') {
 }
 
 /**
- * Sample implementation of hook_token_values(). 
+ * Sample implementation of hook_token_values().
  *
  * @param type
  *   A flag indicating the class of substitution tokens to use. If an
@@ -157,7 +157,6 @@ function token_include() {
   if (module_exists('comment')) {
     require_once("$path/token_comment.inc");
   }
-
 }
 
 /**
@@ -295,13 +294,13 @@ function token_get_values($type = 'global', $object = NULL, $flush = FALSE, $opt
     $result->values = array();
     return $result;
   }
-  
+
   $running = TRUE;
 
   token_include();
 
   $id = _token_get_id($type, $object);
-  if (isset($tokens[$type][$id])) {
+  if ($id && isset($tokens[$type][$id])) {
     $tmp_tokens = $tokens[$type][$id];
   }
   else {
