@@ -40,6 +40,18 @@ function node_token_values($type, $object = NULL, $options = array()) {
       $values['author-mail']        = check_plain($account->mail);
       $values['author-mail-raw']    = $account->mail;
 
+      $values['log']                = filter_xss($node->log);
+      $values['log-raw']            = $node->log;
+
+      if (module_exists('comment')) {
+        $values['node_comment_count'] = isset($node->comment_count) ? $node->comment_count : 0;
+        $values['unread_comment_count'] = comment_num_new($node->nid);
+      }
+      else {
+        $values['node_comment_count'] = 0;
+        $values['unread_comment_count'] = 0;
+      }
+
       if (isset($node->created)) {
         $values += token_get_date_token_values($node->created);
       }
@@ -53,7 +65,7 @@ function node_token_values($type, $object = NULL, $options = array()) {
       $trail = array();
       $trail_raw = array();
       $original_mid = token_menu_get_mid('node/'. $node->nid);
-      
+
       $mid = $original_mid;
       while ($mid && $_menu['visible'][$mid] && $_menu['visible'][$mid]['pid'] != 0) {
         array_unshift($trail, check_plain($_menu['visible'][$mid]['title']));
@@ -163,7 +175,11 @@ function node_token_list($type = 'all') {
     $tokens['node']['author-name-raw'] = t("Node author's user name.");
     $tokens['node']['author-mail']     = t("Node author's e-mail.");
     $tokens['node']['author-mail-raw'] = t("Node author's e-mail.");
+    $tokens['node']['node_comment_count'] = t("The number of comments on a node.");
+    $tokens['node']['unread_comment_count'] = t("The number of new comments on a node.");
 
+    $tokens['node']['log']     = t('The node revision log message.');
+    $tokens['node']['log-raw'] = t('The node revision log message.');
 
     $tokens['node']['term']            = t("Name of top taxonomy term");
     $tokens['node']['term-raw']        = t("Unfiltered name of top taxonomy term.");
@@ -221,7 +237,7 @@ function book_token_values($type, $object = NULL, $options = array()) {
       }
       $tokens['bookpath'] = $bookpath;
       $tokens['bookpath-raw'] = $bookpath_raw;
-    } 
+    }
 
     return $tokens;
   }
