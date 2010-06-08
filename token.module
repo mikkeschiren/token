@@ -138,7 +138,7 @@ function token_include() {
     $run = TRUE;
     $path = drupal_get_path('module', 'token');
     $modules_enabled = array_keys(module_list());
-    $modules = array('node', 'user', 'taxonomy', 'comment');
+    $modules = array('node', 'user', 'taxonomy', 'comment', 'content');
     $modules = array_intersect($modules, $modules_enabled);
     foreach ($modules as $module) {
       if ($module == 'content') {
