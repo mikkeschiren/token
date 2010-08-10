@@ -96,7 +96,7 @@ function token_token_values($type, $object = NULL) {
       $values['user-mail']    = $user->uid ? $user->mail : '';
 
       // Site information tokens.
-      $values['site-url']     = url('<front>', array('absolute' => TRUE));
+      $values['site-url']     = url('<front>', NULL, NULL, TRUE);
       $values['site-name']    = check_plain(variable_get('site_name', t('Drupal')));
       $values['site-slogan']  = check_plain(variable_get('site_slogan', ''));
       $values['site-mission'] = filter_xss_admin(variable_get('site_mission', ''));
@@ -109,7 +109,7 @@ function token_token_values($type, $object = NULL) {
       $alias = drupal_get_path_alias($_GET['q']);
       $values['current-page-path'] = $alias;
       $values['current-page-path-raw'] = check_plain($alias);
-      $values['current-page-url'] = url($_GET['q'], array('absolute' => TRUE));
+      $values['current-page-url'] = url($_GET['q'], NULL, NULL, TRUE);
 
       $page = isset($_GET['page']) ? $_GET['page'] : '';
       $pager_page_array = explode(',', $page);
