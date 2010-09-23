@@ -14,6 +14,10 @@
 /**
  * Provide metadata about available placeholder tokens and token types.
  *
+ * @param $type
+ *   The type of tokens to list (e.g. 'global', 'node', or 'user'). To list all
+ *   tokens, use 'all'.
+ *
  * @return
  *   An associative array of available tokens. The base array is keys of token
  *   types and an array of its tokens. The token arrays are keys containing the
@@ -37,8 +41,7 @@ function hook_token_list() {
  * Provide replacement values for placeholder tokens.
  *
  * @param $type
- *   The type of token being replaced. 'global', 'node', and 'user', are
- *   common.
+ *   The type of token being replaced (e.g. 'global', 'node', or 'user').
  * @param $data
  *   (optional) An object to be used when generating replacement values.
  * @param $options
