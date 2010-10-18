@@ -393,6 +393,10 @@ function token_get_list($types = 'all') {
       }
     }
   }
+  // Sort the tokens by name.
+  foreach (array_keys($return) as $category) {
+    ksort($return[$category]);
+  }
   return $return;
 }
 
