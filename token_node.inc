@@ -289,7 +289,6 @@ function book_token_values($type, $object = NULL, $options = array()) {
       foreach ($trail_raw as $title) {
         $trail[] = check_plain($title);
       }
-      $book_title = isset($trail[0]) ? $trail[0] : '';
       $tokens = array();
       $tokens['book'] = $book;
       $tokens['book-raw'] = $book_raw;

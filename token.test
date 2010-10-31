@@ -14,7 +14,7 @@ class TokenTestHelper extends DrupalWebTestCase {
     // Call parent::setUp() allowing test cases to pass further modules.
     $modules = func_get_args();
     $modules = array_merge(array('path', 'token'), $modules);
-    
+
     $parent_callback = 'parent::setUp';
     if (version_compare(PHP_VERSION, '5.3.0', '<')) {
       $parent_callback = array($this, 'parent::setUp');
