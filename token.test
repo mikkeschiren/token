@@ -78,6 +78,27 @@ class TokenUnitTestCase extends TokenTestHelper {
       $this->assertEqual($invalid_tokens, $test['invalid tokens'], 'Invalid tokens detected properly.');
     }
   }
+
+  /**
+   * Test the $options['clear'] parameter for token_replace().
+   */
+  public function testClearOption() {
+    $tests[] = array(
+      'input' => 'Foo [site-name][invalid-token] bar [another-invalid-token] [invalid-token]',
+      'output' => 'Foo Drupal bar  ',
+      'options' => array('clear' => TRUE),
+    );
+    $tests[] = array(
+      'input' => 'Foo [site-name][invalid-token] bar [another-invalid-token] [invalid-token]',
+      'output' => 'Foo Drupal[invalid-token] bar [another-invalid-token] [invalid-token]',
+      'options' => array(),
+    );
+
+    foreach ($tests as $test) {
+      $output = token_replace($test['input'], 'global', NULL, TOKEN_PREFIX, TOKEN_SUFFIX, $test['options']);
+      $this->assertIdentical($output, $test['output']);
+    }
+  }
 }
 
 class TokenNodeTestCase extends TokenTestHelper {

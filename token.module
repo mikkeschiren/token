@@ -200,7 +200,9 @@ function token_include() {
  *   matches. Defaults to TOKEN_SUFFIX.
  * @param $options
  *   (optional) A keyed array of settings and flags to control the token
- *   generation and replacement process.
+ *   generation and replacement process. Supported options are:
+ *   - clear: A boolean flag indicating that tokens should be removed from the
+ *     final text if no replacement value can be generated.
  * @param $flush
  *   (optional) A flag indicating whether or not to flush the token cache.
  *   Useful for processes that need to slog through huge numbers of tokens
@@ -211,9 +213,7 @@ function token_include() {
  *   Text with tokens replaced.
  */
 function token_replace($text, $type = 'global', $object = NULL, $leading = TOKEN_PREFIX, $trailing = TOKEN_SUFFIX, $options = array(), $flush = FALSE) {
-  $full = token_get_values($type, $object, $flush, $options);
-  $tokens = token_prepare_tokens($full->tokens, $leading, $trailing);
-  return str_replace($tokens, $full->values, $text);
+  return token_replace_multiple($text, array($type => $object), $leading, $trailing, $options, $flush);
 }
 
 /**
@@ -238,7 +238,9 @@ function token_replace($text, $type = 'global', $object = NULL, $leading = TOKEN
  *   matches. Defaults to TOKEN_SUFFIX.
  * @param $options
  *   (optional) A keyed array of settings and flags to control the token
- *   generation and replacement process.
+ *   generation and replacement process. Supported options are:
+ *   - clear: A boolean flag indicating that tokens should be removed from the
+ *     final text if no replacement value can be generated.
  * @param $flush
  *   (optional) A flag indicating whether or not to flush the token cache.
  *   Useful for processes that need to slog through huge numbers of tokens
@@ -248,7 +250,7 @@ function token_replace($text, $type = 'global', $object = NULL, $leading = TOKEN
  * @return
  *   Text with tokens replaced.
  */
-function token_replace_multiple($text, $types = array(), $leading = TOKEN_PREFIX, $trailing = TOKEN_SUFFIX, $options = array(), $flush = FALSE) {
+function token_replace_multiple($text, $types = array('global' => NULL), $leading = TOKEN_PREFIX, $trailing = TOKEN_SUFFIX, $options = array(), $flush = FALSE) {
   $full = new stdClass();
   $full->tokens = $full->values = array();
 
@@ -261,6 +263,16 @@ function token_replace_multiple($text, $types = array(), $leading = TOKEN_PREFIX
     $temp = token_get_values($type, $object, $flush, $options);
     $full->tokens = array_merge($full->tokens, $temp->tokens);
     $full->values = array_merge($full->values, $temp->values);
+  }
+
+  // Support clearing out tokens that would not be replaced.
+  if (!empty($options['clear'])) {
+    foreach (token_scan($text) as $token) {
+      if (!in_array($token, $full->tokens)) {
+        $full->tokens[] = $token;
+        $full->values[] = '';
+      }
+    }
   }
 
   $tokens = token_prepare_tokens($full->tokens, $leading, $trailing);
