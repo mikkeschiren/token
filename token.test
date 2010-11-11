@@ -240,7 +240,7 @@ class TokenTaxonomyTestCase extends TokenTestHelper {
 
   public static function getInfo() {
     return array(
-      'name' => 'Taxonomy token tests',
+      'name' => 'Taxonomy and vocabulary token tests',
       'description' => 'Test the taxonomy tokens.',
       'group' => 'Token',
     );
@@ -290,8 +290,18 @@ class TokenTaxonomyTestCase extends TokenTestHelper {
       'vocab' => check_plain($vocabulary->name),
       'vocab-raw' => $vocabulary->name,
       'vocab-description' => 'Vocab Description',
+      'vocab-description-raw' => $vocabulary->description,
     );
     $this->assertTokens('taxonomy', $term, $tokens);
+
+    $tokens = array(
+      'vocabulary-vid' => $vocabulary->vid,
+      'vocabulary-name' => check_plain($vocabulary->name),
+      'vocabulary-name-raw' => $vocabulary->name,
+      'vocabulary-description' => 'Vocab Description',
+      'vocabulary-description-raw' => $vocabulary->description,
+    );
+    $this->assertTokens('vocabulary', $vocabulary, $tokens);
   }
 }
 

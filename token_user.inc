@@ -42,12 +42,11 @@ function user_token_values($type, $object = NULL, $options = array()) {
   $values = array();
   switch ($type) {
     case 'user':
-      if (isset($object)) {
+      if (!empty($object)) {
         $account = $object;
       }
       else {
-        global $user;
-        $account = user_load(array('uid' => $user->uid));
+        $account = user_load(array('uid' => $GLOBALS['user']->uid));
       }
 
       // Adjust for the anonymous user name.
