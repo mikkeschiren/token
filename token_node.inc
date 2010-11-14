@@ -278,7 +278,6 @@ function book_token_values($type, $object = NULL, $options = array()) {
     $tokens['bookpath-raw'] = '';
 
     if (!empty($node->book['menu_name'])) {
-      $menus = menu_get_menus();
       $trail_raw = _menu_titles($node->book, $node->nid);
       $book_raw = $trail_raw[0];
       $book = check_plain($book_raw);

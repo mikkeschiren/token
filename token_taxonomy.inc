@@ -15,7 +15,7 @@
  */
 
 /**
- * Implementation of hook_token_list().
+ * Implements hook_token_list().
  */
 function taxonomy_token_list($type = 'all') {
   $tokens = array();
@@ -46,7 +46,7 @@ function taxonomy_token_list($type = 'all') {
 }
 
 /**
- * Implementation of hook_token_values().
+ * Implements hook_token_values().
  */
 function taxonomy_token_values($type, $object = NULL, $options = array()) {
   $values = array();
