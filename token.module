@@ -544,7 +544,9 @@ function token_get_date_token_values($timestamp = NULL, $token_prefix = '') {
  */
 function token_get_invalid_tokens_by_context($value, $valid_types = array(), $leading = TOKEN_PREFIX, $trailing = TOKEN_SUFFIX) {
   // Add the token types that are always valid in global context.
-  $valid_types[] = 'global';
+  if (!in_array('all', $valid_types)) {
+    $valid_types[] = 'global';
+  }
 
   $invalid_tokens = array();
   $valid_tokens = token_get_list($valid_types);
