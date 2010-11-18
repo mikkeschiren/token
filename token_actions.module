@@ -85,6 +85,7 @@ function token_actions_send_email_action($object, $context) {
  * Form builder; Prepare a form for a tokenized e-mail action.
  *
  * @see token_actions_send_email_action()
+ * @see token_actions_send_email_action_validate()
  * @see token_actions_send_email_action_submit()
  */
 function token_actions_send_email_action_form($context) {
@@ -143,10 +144,26 @@ function token_actions_send_email_action_form($context) {
 }
 
 /**
- * Process token_actions_send_email_action_form form submissions.
+ * Validate token_actions_send_email_action form submissions.
  *
  * @see token_actions_send_email_action()
  * @see token_actions_send_email_action_form()
+ * @see token_actions_send_email_action_submit()
+ */
+function token_actions_send_email_action_validate($form, $form_state) {
+  $form_values = $form_state['values'];
+  if (!valid_email_address($form_values['recipient']) && strpos($form_values['recipient'], 'mail') !== FALSE) {
+    // We want the literal %mail placeholder to be emphasized in the error message.
+    form_set_error('recipient', t('Enter a valid email address or use a token e-mail address such as %mail.', array('%mail' => '[mail]')));
+  }
+}
+
+/**
+ * Process token_actions_send_email_action form submissions.
+ *
+ * @see token_actions_send_email_action()
+ * @see token_actions_send_email_action_form()
+ * @see token_actions_send_email_action_validate()
  */
 function token_actions_send_email_action_submit($form, $form_state) {
   return array(
@@ -203,7 +220,7 @@ function token_actions_message_action_form($context) {
 }
 
 /**
- * Process token_actions_message_action_form form submissions.
+ * Process token_actions_message_action form submissions.
  *
  * @see token_actions_message_action()
  * @see token_actions_message_action_form()
@@ -257,7 +274,7 @@ function token_actions_goto_action_form($context) {
 }
 
 /**
- * Process token_actions_goto_action_form form submissions.
+ * Process token_actions_goto_action form submissions.
  *
  * @see token_actions_goto_action()
  * @see token_actions_goto_action_form()
