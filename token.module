@@ -398,7 +398,7 @@ function token_get_list($types = 'all') {
         foreach ($module_token_list as $category => $tokens) {
           foreach ($tokens as $token => $title) {
             // Automatically append a raw token warning.
-            if (substr($token, -4) === '-raw' && strpos($title, t('raw user input')) === FALSE && strpos($title, '1269441371') === FALSE) {
+            if (substr($token, -4) === '-raw' && strpos($title, t('raw user input')) === FALSE && strpos($title, t('UNIX timestamp format')) === FALSE) {
               $title .= ' <em>' . t('Warning: Token value contains raw user input.') . '</em>';
             }
             $return[$category][$token] = $title;
@@ -461,7 +461,8 @@ function _token_get_id($type = 'global', $object = NULL) {
  * @param $description
  */
 function token_get_date_token_info($description, $token_prefix = '') {
-  $tokens[$token_prefix . 'small']  = t("!description date in 'small' format. <em>(06/07/2010 - 23:28)</em>", array('!description' => $description));
+  $time = time();
+  $tokens[$token_prefix . 'small']  = t("!description date in 'small' format. (%date)", array('!description' => $description, '%date' => format_date($time, 'small')));
   $tokens[$token_prefix . 'yyyy']   = t("!description year (four digit)", array('!description' => $description));
   $tokens[$token_prefix . 'yy']     = t("!description year (two digit)", array('!description' => $description));
   $tokens[$token_prefix . 'month']  = t("!description month (full word)", array('!description' => $description));
@@ -476,8 +477,8 @@ function token_get_date_token_info($description, $token_prefix = '') {
   $tokens[$token_prefix . 'ddd']    = t("!description day (abbreviation)", array('!description' => $description));
   $tokens[$token_prefix . 'dd']     = t("!description day (two digits with leading zeros)", array('!description' => $description));
   $tokens[$token_prefix . 'd']      = t("!description day (one or two digits without leading zeros)", array('!description' => $description));
-  $tokens[$token_prefix . 'raw']    = t("!description in UNIX timestamp format (1269441371)", array('!description' => $description));
-  $tokens[$token_prefix . 'since']  = t("!description in 'time-since' format. (40 years 3 months)", array('!description' => $description));
+  $tokens[$token_prefix . 'raw']    = t("!description in UNIX timestamp format (%date)", array('!description' => $description, '%date' => $time));
+  $tokens[$token_prefix . 'since']  = t("!description in 'time-since' format. (%date)", array('!description' => $description, '%date' => format_interval($time - 360, 2)));
   return $tokens;
 }
 
@@ -514,7 +515,7 @@ function token_get_date_token_values($timestamp = NULL, $token_prefix = '') {
 
   $tokens[$token_prefix . 'small'] = format_date($timestamp, 'small', '', $timezone);
   $tokens[$token_prefix . 'raw'] = $timestamp;
-  $tokens[$token_prefix . 'since'] = format_interval($time - $timestamp);
+  $tokens[$token_prefix . 'since'] = format_interval($time - $timestamp, 2);
 
   $timestamp += $timezone;
   if (version_compare(PHP_VERSION, '5.1.0', '>=')) {
