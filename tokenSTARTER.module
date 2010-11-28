@@ -39,7 +39,7 @@ function tokenSTARTER_token_list($type = 'all') {
 /**
  * Implementation of hook_token_values().
  */
-function tokenSTARTER_token_values($type, $object = NULL) {
+function tokenSTARTER_token_values($type, $object = NULL, $options = array()) {
   $values = array();
   switch ($type) {
     case 'global':
