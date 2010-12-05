@@ -152,7 +152,7 @@ function token_actions_send_email_action_form($context) {
  */
 function token_actions_send_email_action_validate($form, $form_state) {
   $form_values = $form_state['values'];
-  if (!valid_email_address($form_values['recipient']) && strpos($form_values['recipient'], 'mail') !== FALSE) {
+  if (!valid_email_address($form_values['recipient']) && strpos($form_values['recipient'], 'mail') === FALSE) {
     // We want the literal %mail placeholder to be emphasized in the error message.
     form_set_error('recipient', t('Enter a valid email address or use a token e-mail address such as %mail.', array('%mail' => '[mail]')));
   }
