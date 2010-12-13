@@ -13,6 +13,7 @@ class TokenTestHelper extends DrupalWebTestCase {
   function setUp(array $modules = array()) {
     $modules[] = 'path';
     $modules[] = 'token';
+    $modules[] = 'token_test';
     parent::setUp($modules);
   }
 
@@ -25,6 +26,43 @@ class TokenTestHelper extends DrupalWebTestCase {
     $values = array_combine($values->tokens, $values->values);
     foreach ($tokens as $token => $expected) {
       $this->assertIdentical($values[$token], $expected, t("Token value for [@token] was '@actual', expected value '@expected'.", array('@token' => $token, '@actual' => $values[$token], '@expected' => $expected)));
+    }
+  }
+
+  /**
+   * Make a page request and test for token generation.
+   */
+  function assertPageTokens($url, array $tokens, array $data = array('global' => NULL), array $options = array()) {
+    if (empty($tokens)) {
+      return TRUE;
+    }
+
+    $token_page_tokens = array(
+      'tokens' => $tokens,
+      'data' => $data,
+      'options' => $options,
+    );
+    variable_set('token_page_tokens', $token_page_tokens);
+
+    $options += array('url_options' => array());
+    $this->drupalGet($url, $options['url_options']);
+    $this->refreshVariables();
+    $result = variable_get('token_page_tokens', array());
+
+    if (!isset($result['values']) || !is_array($result['values'])) {
+      return $this->fail('Failed to generate tokens.');
+    }
+
+    foreach ($tokens as $token => $expected) {
+      if (!isset($expected)) {
+        $this->assertTrue(!isset($result['values'][$token]) || $result['values'][$token] === $token, t("Token value for @token was not generated.", array('@token' => $token)));
+      }
+      elseif (!isset($result['values'][$token])) {
+        $this->fail(t('Failed to generate token @token.', array('@token' => $token)));
+      }
+      else {
+        $this->assertIdentical($result['values'][$token], (string) $expected, t("Token value for @token was '@actual', expected value '@expected'.", array('@token' => $token, '@actual' => $result['values'][$token], '@expected' => $expected)));
+      }
     }
   }
 }
@@ -464,5 +502,37 @@ class TokenBookTestCase extends TokenTestHelper {
       'bookpath-raw' => 'Root/Sub page1',
     );
     $this->assertTokens('node', $sub_child_node1, $tokens);
+  }
+}
+
+/**
+ * Test the current page tokens.
+ */
+class TokenCurrentPageTestCase extends TokenTestHelper {
+  public static function getInfo() {
+    return array(
+      'name' => 'Current page token tests',
+      'description' => 'Test the current page tokens.',
+      'group' => 'Token',
+    );
+  }
+
+  function testCurrentPageTokens() {
+    $tokens = array(
+      '[current-page-title]' => '',
+      '[current-page-path]' => 'node',
+      '[current-page-url]' => url('node', array('absolute' => TRUE)),
+      '[current-page-number]' => 1,
+    );
+    $this->assertPageTokens('', $tokens);
+
+    $node = $this->drupalCreateNode(array('title' => 'Node title', 'path' => 'node-alias'));
+    $tokens = array(
+      '[current-page-title]' => 'Node title',
+      '[current-page-path]' => 'node-alias',
+      '[current-page-url]' => url("node/{$node->nid}", array('absolute' => TRUE)),
+      '[current-page-number]' => 1,
+    );
+    $this->assertPageTokens("node/{$node->nid}", $tokens);
   }
 }
