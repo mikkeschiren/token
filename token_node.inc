@@ -193,6 +193,8 @@ function menu_token_list($type = 'all') {
     $tokens['node']['menu-link-title-raw'] = t("The unfiltered text used in the menu as link text for this item.");
     $tokens['node']['menu-link-mlid']      = t("The unique ID of the node's menu link.");
     $tokens['node']['menu-link-plid']      = t("The unique ID of the node's menu link parent.");
+    $tokens['node']['menu-link-parent-path']     = t('The URL alias of the parent menu link of the node.');
+    $tokens['node']['menu-link-parent-path-raw'] = t('The URL alias of the parent menu link of the node.');
   }
 
   return $tokens;
@@ -202,7 +204,16 @@ function menu_token_list($type = 'all') {
  * Implements hook_token_values() on behalf of menu.module.
  */
 function menu_token_values($type, $object = NULL, $options = array()) {
+  static $menus;
+
   $values = array();
+
+  // Statically cache menu_get_menus() since this causes a database query
+  // every time it is called, and is not likely to change in the same page
+  // request.
+  if (!isset($menus)) {
+    $menus = menu_get_menus();
+  }
 
   if ($type == 'node' && !empty($object)) {
     $node = $object;
@@ -216,6 +227,8 @@ function menu_token_values($type, $object = NULL, $options = array()) {
     $values['menu-link-title-raw'] = '';
     $values['menu-link-mlid']      = '';
     $values['menu-link-plid']      = '';
+    $values['menu-link-parent-path'] = '';
+    $values['menu-link-parent-path-raw'] = '';
 
     if (!isset($node->menu)) {
       // Nodes do not have their menu links loaded via menu_nodeapi($node, 'load').
@@ -224,25 +237,31 @@ function menu_token_values($type, $object = NULL, $options = array()) {
 
     // Now get the menu related information.
     if (!empty($node->menu['mlid'])) {
-      $menu_link = token_menu_link_load($node->menu['mlid']);
-      $menus = menu_get_menus();
-      $menu = isset($menus[$menu_link['menu_name']]) ? $menus[$menu_link['menu_name']] : '';
+      $link = token_menu_link_load($node->menu['mlid']);
 
-      $parents = token_menu_link_get_parents_all($menu_link['mlid']);
+      if (isset($menus[$link['menu_name']])) {
+        $values['menu-raw'] = $menus[$link['menu_name']];
+        $values['menu']     = check_plain($values['menu-raw']);
+      }
+
+      $parents = token_menu_link_get_parents_all($link['mlid']);
       $trail_raw = array();
       foreach ($parents as $parent) {
         $trail_raw[] = $parent['title'];
       }
       $trail = array_map('check_plain', $trail_raw);
 
-      $values['menu']                = check_plain($menu);
-      $values['menu-raw']            = $menu;
       $values['menupath']            = !empty($options['pathauto']) ? $trail : implode('/', $trail);
       $values['menupath-raw']        = !empty($options['pathauto']) ? $trail_raw : implode('/', $trail_raw);
-      $values['menu-link-title']     = check_plain($menu_link['title']);
-      $values['menu-link-title-raw'] = $menu_link['title'];
-      $values['menu-link-mlid']      = $menu_link['mlid'];
-      $values['menu-link-plid']      = $menu_link['plid'];
+      $values['menu-link-title']     = check_plain($link['title']);
+      $values['menu-link-title-raw'] = $link['title'];
+      $values['menu-link-mlid']      = $link['mlid'];
+
+      if (!empty($link['plid']) && $parent = token_menu_link_load($link['plid'])) {
+        $values['menu-link-plid'] = $parent['mlid'];
+        $values['menu-link-parent-path-raw'] = drupal_get_path_alias($parent['href']);
+        $values['menu-link-parent-path']     = check_plain($values['menu-link-parent-path-raw']);
+      }
     }
   }
 
