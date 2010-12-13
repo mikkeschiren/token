@@ -32,7 +32,7 @@ function node_token_values($type, $object = NULL, $options = array()) {
       $values['nid']                = $node->nid;
       $values['type']               = $node->type;
       $values['type-name']          = node_get_types('name', $node->type);
-      $values['language']           = filter_xss_admin($node->language);
+      $values['language']           = check_plain($node->language);
       $values['title']              = check_plain($node->title);
       $values['title-raw']          = $node->title;
       $values['node-path-raw']      = drupal_get_path_alias('node/'. $node->nid);
@@ -57,7 +57,7 @@ function node_token_values($type, $object = NULL, $options = array()) {
       }
 
       if (isset($node->created)) {
-        $values += token_get_date_token_values($node->created);
+        $values += token_get_date_token_values($node->created, '');
       }
 
       if (isset($node->changed)) {
