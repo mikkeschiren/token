@@ -64,41 +64,6 @@ function node_token_values($type, $object = NULL, $options = array()) {
         $values += token_get_date_token_values($node->changed, 'mod-');
       }
 
-      // Try to get the menu data.
-      $mlid = db_result(db_query("SELECT mlid FROM {menu_links} WHERE link_path = '%s'", 'node/'. $node->nid));
-
-      // Now get the menu related information.
-      if (!empty($mlid) || !empty($node->menu['mlid']) || !empty($node->menu['plid'])) {
-        $menu_link = menu_link_load($mlid);
-        $menus = menu_get_menus();
-        $menu = isset($menus[$menu_link['menu_name']]) ? $menus[$menu_link['menu_name']] : '';
-        $trail_raw = _menu_titles($menu_link, $node->nid);
-
-        $trail = array();
-        foreach ($trail_raw as $title) {
-          $trail[] = check_plain($title);
-        }
-
-        $values['menupath']            = !empty($options['pathauto']) ? $trail : implode('/', $trail);
-        $values['menupath-raw']        = !empty($options['pathauto']) ? $trail_raw : implode('/', $trail_raw);
-        $values['menu']                = check_plain($menu);
-        $values['menu-raw']            = $menu;
-        $values['menu-link-title']     = check_plain($menu_link['title']);
-        $values['menu-link-title-raw'] = $menu_link['link_title'];
-        $values['menu-link-mlid']      = $menu_link['mlid'];
-        $values['menu-link-plid']      = $menu_link['plid'];
-      }
-      else {
-        $values['menu']                = '';
-        $values['menu-raw']            = '';
-        $values['menupath']            = '';
-        $values['menupath-raw']        = '';
-        $values['menu-link-title']     = '';
-        $values['menu-link-title-raw'] = '';
-        $values['menu-link-mlid']      = '';
-        $values['menu-link-plid']      = '';
-      }
-
       // And now taxonomy, which is a bit more work. This code is adapted from
       // pathauto's handling code; it's intended for compatibility with it.
       if (module_exists('taxonomy') && !empty($node->taxonomy) && is_array($node->taxonomy)) {
@@ -209,106 +174,134 @@ function node_token_list($type = 'all') {
       // $tokens['node']['catpath']        = t("Full taxonomy tree for the topmost term");
     }
 
-    if (module_exists('menu')) {
-      $tokens['node']['menu']                = t("The name of the menu the node belongs to.");
-      $tokens['node']['menu-raw']            = t("The name of the menu the node belongs to.");
-      $tokens['node']['menupath']            = t("The menu path (as reflected in the breadcrumb), not including Home or [menu]. Separated by /.");
-      $tokens['node']['menupath-raw']        = t("The unfiltered menu path (as reflected in the breadcrumb), not including Home or [menu]. Separated by /.");
-      $tokens['node']['menu-link-title']     = t("The text used in the menu as link text for this item.");
-      $tokens['node']['menu-link-title-raw'] = t("The unfiltered text used in the menu as link text for this item.");
-      $tokens['node']['menu-link-mlid']      = t("The unique ID of the node's menu link.");
-      $tokens['node']['menu-link-plid']      = t("The unique ID of the node's menu link parent.");
-    }
-
     return $tokens;
   }
 }
 
 /**
- * Return an array of titles for a menu, from the top down to the specified node
- *
- * @param $menu_link
- *   Fully loaded menu link, of node to which a path is desired.
- * @param $nid
- *   Id of node.
- * @return
- *   An array of titles through the specified node
+ * Implements hook_token_list() on behalf of menu.module.
  */
-function _menu_titles($menu_link, $nid) {
-  $tree = menu_tree_all_data($menu_link['menu_name'], $menu_link);
+function menu_token_list($type = 'all') {
+  $tokens = array();
 
-  // Get mlid of all nodes in path - top-most parent to leaf node.
-  $parents = array();
-  for ($i = 1; $i < MENU_MAX_DEPTH; $i++) {
-    if ($menu_link["p$i"]) {
-      $parents[] = $menu_link["p$i"];
-    }
+  if ($type == 'node' || $type == 'all') {
+    $tokens['node']['menu']                = t("The name of the menu the node belongs to.");
+    $tokens['node']['menu-raw']            = t("The name of the menu the node belongs to.");
+    $tokens['node']['menupath']            = t("The menu path (as reflected in the breadcrumb), not including Home or [menu]. Separated by /.");
+    $tokens['node']['menupath-raw']        = t("The unfiltered menu path (as reflected in the breadcrumb), not including Home or [menu]. Separated by /.");
+    $tokens['node']['menu-link-title']     = t("The text used in the menu as link text for this item.");
+    $tokens['node']['menu-link-title-raw'] = t("The unfiltered text used in the menu as link text for this item.");
+    $tokens['node']['menu-link-mlid']      = t("The unique ID of the node's menu link.");
+    $tokens['node']['menu-link-plid']      = t("The unique ID of the node's menu link parent.");
   }
 
-  // Build the titles in this hierarchy.
-  $titles = array();
-  $current = array_shift($tree);
-  while ($current) {
-    if (in_array($current['link']['mlid'], $parents)) {
-      $titles[] = $current['link']['title'];
-      if ($current['link']['href'] == "node/". $nid) {
-        break;
-      }
-      // Go deeper in tree hierarchy.
-      $tree = $current['below'];
-    }
-    // Go to next sibling at same level in tree hierarchy.
-    $current = $tree ? array_shift($tree) : NULL;
-  }
-  return $titles;
+  return $tokens;
 }
 
 /**
- * Implementation of hook_token_values() for book nodes
+ * Implements hook_token_values() on behalf of menu.module.
  */
-function book_token_values($type, $object = NULL, $options = array()) {
-  if ($type == 'node') {
+function menu_token_values($type, $object = NULL, $options = array()) {
+  $values = array();
+
+  if ($type == 'node' && !empty($object)) {
     $node = $object;
 
-    // Initialize some variables to empty.
-    $tokens['book'] = '';
-    $tokens['book-raw'] = '';
-    $tokens['book_id'] = '';
-    $tokens['bookpath'] = '';
-    $tokens['bookpath-raw'] = '';
+    // Initialize tokens to empty strings.
+    $values['menu']                = '';
+    $values['menu-raw']            = '';
+    $values['menupath']            = '';
+    $values['menupath-raw']        = '';
+    $values['menu-link-title']     = '';
+    $values['menu-link-title-raw'] = '';
+    $values['menu-link-mlid']      = '';
+    $values['menu-link-plid']      = '';
 
-    if (!empty($node->book['menu_name'])) {
-      $trail_raw = _menu_titles($node->book, $node->nid);
-      $book_raw = $trail_raw[0];
-      $book = check_plain($book_raw);
-      // For book paths, we don't include the current node's title (last in
-      // the array) in the trail.
-      array_pop($trail_raw);
-      $trail = array();
-      foreach ($trail_raw as $title) {
-        $trail[] = check_plain($title);
-      }
-      $tokens = array();
-      $tokens['book'] = $book;
-      $tokens['book-raw'] = $book_raw;
-      $tokens['book_id'] = $node->book['bid'];
-      $tokens['bookpath'] = !empty($options['pathauto']) ? $trail : implode('/', $trail);
-      $tokens['bookpath-raw'] = !empty($options['pathauto']) ? $trail_raw : implode('/', $trail_raw);
+    if (!isset($node->menu)) {
+      // Nodes do not have their menu links loaded via menu_nodeapi($node, 'load').
+      menu_nodeapi($node, 'prepare');
     }
 
-    return $tokens;
+    // Now get the menu related information.
+    if (!empty($node->menu['mlid'])) {
+      $menu_link = token_menu_link_load($node->menu['mlid']);
+      $menus = menu_get_menus();
+      $menu = isset($menus[$menu_link['menu_name']]) ? $menus[$menu_link['menu_name']] : '';
+
+      $parents = token_menu_link_get_parents_all($menu_link['mlid']);
+      $trail_raw = array();
+      foreach ($parents as $parent) {
+        $trail_raw[] = $parent['title'];
+      }
+      $trail = array_map('check_plain', $trail_raw);
+
+      $values['menu']                = check_plain($menu);
+      $values['menu-raw']            = $menu;
+      $values['menupath']            = !empty($options['pathauto']) ? $trail : implode('/', $trail);
+      $values['menupath-raw']        = !empty($options['pathauto']) ? $trail_raw : implode('/', $trail_raw);
+      $values['menu-link-title']     = check_plain($menu_link['title']);
+      $values['menu-link-title-raw'] = $menu_link['title'];
+      $values['menu-link-mlid']      = $menu_link['mlid'];
+      $values['menu-link-plid']      = $menu_link['plid'];
+    }
   }
+
+  return $values;
 }
 
+/**
+ * Implements hook_token_list() on behalf of book.module.
+ */
 function book_token_list($type) {
+  $tokens = array();
+
   if ($type == 'node' || $type == 'all') {
-    $list['book']['book']           = t("The title of the node's book parent.");
-    $list['book']['book_id']        = t("The id of the node's book parent.");
-    $list['book']['bookpath']       = t("The titles of all parents in the node's book hierarchy.");
-
-    $list['book']['book-raw']       = t("The unfiltered title of the node's book parent.");
-    $list['book']['bookpath-raw']   = t("The unfiltered titles of all parents in the node's book hierarchy.");
-
-    return $list;
+    $tokens['book']['book']         = t("The title of the node's book parent.");
+    $tokens['book']['book-raw']     = t("The title of the node's book parent.");
+    $tokens['book']['book_id']      = t("The id of the node's book parent.");
+    $tokens['book']['bookpath']     = t("The titles of all parents in the node's book hierarchy.");
+    $tokens['book']['bookpath-raw'] = t("The titles of all parents in the node's book hierarchy.");
   }
+
+  return $tokens;
+}
+
+/**
+ * Implements hook_token_values() on behalf of book.module.
+ */
+function book_token_values($type, $object = NULL, $options = array()) {
+  $values = array();
+
+  if ($type == 'node' && !empty($object)) {
+    $node = $object;
+
+    // Initialize tokens to empty strings.
+    $values['book'] = '';
+    $values['book-raw'] = '';
+    $values['book_id'] = '';
+    $values['bookpath'] = '';
+    $values['bookpath-raw'] = '';
+
+    if (!empty($node->book['mlid'])) {
+      // Exclude the current node's title from the book path trail (start with
+      // the book link's plid rather than mlid).
+      $parents = token_menu_link_get_parents_all($node->book['plid']);
+      $trail_raw = array();
+      foreach ($parents as $parent) {
+        $trail_raw[] = $parent['title'];
+      }
+      $trail = array_map('check_plain', $trail_raw);
+
+      // Load the root book page.
+      $root = token_menu_link_load($node->book['p1']);
+
+      $values['book'] = check_plain($root['title']);
+      $values['book-raw'] = $root['title'];
+      $values['book_id'] = $node->book['bid'];
+      $values['bookpath'] = !empty($options['pathauto']) ? $trail : implode('/', $trail);
+      $values['bookpath-raw'] = !empty($options['pathauto']) ? $trail_raw : implode('/', $trail_raw);
+    }
+  }
+
+  return $values;
 }

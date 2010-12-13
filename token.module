@@ -39,7 +39,7 @@ function token_help($path, $arg) {
  * Return an array of the core modules supported by token.module.
  */
 function _token_core_supported_modules() {
-  return array('node', 'user', 'taxonomy', 'comment');
+  return array('node', 'user', 'taxonomy', 'comment', 'menu', 'book');
 }
 
 /**
@@ -766,4 +766,144 @@ function token_find_duplicate_tokens() {
   }
 
   return $all_tokens;
+}
+
+/**
+ * Get a translated menu link by its mlid, without access checking.
+ *
+ * This function is a copy of menu_link_load() but with its own cache and a
+ * simpler query to load the link. This also skips normal menu link access
+ * checking by using _token_menu_link_translate().
+ *
+ * @param $mlid
+ *   The mlid of the menu item.
+ *
+ * @return
+ *   A menu link translated for rendering.
+ *
+ * @see menu_link_load()
+ * @see _token_menu_link_translate()
+ */
+function token_menu_link_load($mlid) {
+  static $cache = array();
+
+  if (!is_numeric($mlid)) {
+    return FALSE;
+  }
+
+  if (!isset($cache[$mlid])) {
+    $item = db_fetch_array(db_query("SELECT * FROM {menu_links} ml LEFT JOIN {menu_router} m ON m.path = ml.router_path WHERE ml.mlid = %d", $mlid));
+    if (!empty($item)) {
+      _token_menu_link_translate($item);
+    }
+    $cache[$mlid] = $item;
+  }
+
+  return $cache[$mlid];
+}
+
+/**
+ * Get a translated book menu link by its mlid, without access checking.
+ *
+ * This function is a copy of book_link_load() but with its own cache and a
+ * simpler query to load the link. This also skips normal menu link access
+ * checking by using _token_menu_link_translate().
+ *
+ * @param $mlid
+ *   The mlid of the book menu item.
+ *
+ * @return
+ *   A book menu link translated for rendering.
+ *
+ * @see book_link_load()
+ * @see _token_menu_link_translate()
+ */
+function token_book_link_load($mlid) {
+  static $cache = array();
+
+  if (!is_numeric($mlid)) {
+    return FALSE;
+  }
+
+  if (!isset($cache[$mlid])) {
+    $item = db_fetch_array(db_query("SELECT * FROM {menu_links} ml INNER JOIN {book} b ON b.mlid = ml.mlid LEFT JOIN {menu_router} m ON m.path = ml.router_path WHERE ml.mlid = %d", $mlid));
+    if (!empty($item)) {
+      _token_menu_link_translate($item);
+    }
+    $cache[$mlid] = $item;
+  }
+
+  return $cache[$mlid];
+}
+
+function _token_menu_link_translate(&$item) {
+  $map = array();
+
+  if (!is_array($item['options'])) {
+    $item['options'] = unserialize($item['options']);
+  }
+
+  if ($item['external']) {
+    $item['access'] = 1;
+    $item['href'] = $item['link_path'];
+    $item['title'] = $item['link_title'];
+    $item['localized_options'] = $item['options'];
+  }
+  else {
+    $map = explode('/', $item['link_path']);
+    _menu_link_map_translate($map, $item['to_arg_functions']);
+    $item['href'] = implode('/', $map);
+
+    // Note - skip callbacks without real values for their arguments.
+    if (strpos($item['href'], '%') !== FALSE) {
+      $item['access'] = FALSE;
+      return FALSE;
+    }
+
+    $item['access'] = TRUE;
+    _menu_item_localize($item, $map, TRUE);
+  }
+
+  // Allow other customizations - e.g. adding a page-specific query string to the
+  // options array. For performance reasons we only invoke this hook if the link
+  // has the 'alter' flag set in the options array.
+  if (!empty($item['options']['alter'])) {
+    drupal_alter('translated_menu_link', $item, $map);
+  }
+
+  return $map;
+}
+
+/**
+ * Find all ancestors of a given menu link ID.
+ *
+ * @param $mlid
+ *   A menu link ID.
+ *
+ * @return
+ *   An array of menu links from token_menu_link_load() with the root link
+ *   first, and the menu link with ID $mlid last.
+ */
+function token_menu_link_get_parents_all($mlid) {
+  $parents = array();
+
+  while (!empty($mlid)) {
+    $link = token_menu_link_load($mlid);
+    array_unshift($parents, $link);
+    $mlid = $link['plid'];
+  }
+
+  return $parents;
+}
+
+/**
+ * Deprecated. Use the raw return value of token_menu_link_get_parents_all() instead.
+ */
+function _menu_titles($menu_link, $nid) {
+  $titles = array();
+  $parents = token_menu_link_get_parents_all($menu_link['mlid']);
+  foreach ($parents as $mlid => $parent) {
+    $titles[] = $parent['title'];
+  }
+  return $titles;
 }
