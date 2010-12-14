@@ -489,23 +489,22 @@ function token_get_date_token_values($timestamp = NULL, $token_prefix = '', $lan
   static $formats;
 
   if (!isset($formats)) {
-    $formats = array(
-      'yyyy' => 'Y',
-      'yy' => 'y',
-      'month' => 'F',
-      'mon' => 'M',
-      'mm' => 'm',
-      'm' => 'n',
-      'ww' => 'W',
-      'date' => 'N', // PHP 5.1 only.
-      'day' => 'l',
-      'ddd' => 'D',
-      'dd' => 'd',
-      'd' => 'j',
-    );
-    if (!version_compare(PHP_VERSION, '5.1.0', '>=')) {
-      unset($formats['date']);
+    $formats = array();
+    $formats['small'] = variable_get('date_format_short', 'm/d/Y - H:i');
+    $formats['yyyy']  = 'Y';
+    $formats['yy']    = 'y';
+    $formats['month'] = 'F';
+    $formats['mon']   = 'M';
+    $formats['mm']    = 'm';
+    $formats['m']     = 'n';
+    $formats['ww']    = 'W';
+    if (version_compare(PHP_VERSION, '5.1.0', '>=')) {
+      $formats['date'] = 'N';
     }
+    $formats['day']   = 'l';
+    $formats['ddd']   = 'D';
+    $formats['dd']    = 'd';
+    $formats['d']     = 'j';
   }
 
   $time = time();
@@ -517,7 +516,6 @@ function token_get_date_token_values($timestamp = NULL, $token_prefix = '', $lan
   foreach ($formats as $token => $format) {
     $tokens[$token_prefix . $token] = token_format_date($timestamp, 'custom', $format, NULL, $langcode);
   }
-  $tokens[$token_prefix . 'small'] = token_format_date($timestamp, 'small', '', NULL, $langcode);
   $tokens[$token_prefix . 'raw'] = $timestamp;
   $tokens[$token_prefix . 'since'] = format_interval($time - $timestamp, 2, $langcode);
 
@@ -530,27 +528,31 @@ function token_get_date_token_values($timestamp = NULL, $token_prefix = '', $lan
  * @see format_date()
  */
 function token_format_date($timestamp, $type = 'medium', $format = '', $timezone = NULL, $langcode = NULL) {
-  if (!isset($timezone)) {
-    global $user;
-    if (variable_get('configurable_timezones', 1) && $user->uid && strlen($user->timezone)) {
-      $timezone = $user->timezone;
+  global $user;
+  static $timezones = array();
+
+  // Statically cache each user's timezone so it doesn't need to be re-fetched
+  // ever call.
+  if (!isset($timezones[$user->uid])) {
+    if (!empty($user->uid) && variable_get('configurable_timezones', 1) && strlen($user->timezone)) {
+      $timezones[$user->uid] = $user->timezone;
     }
     else {
-      $timezone = variable_get('date_default_timezone', 0);
+      $timezones[$user->uid] = variable_get('date_default_timezone', 0);
     }
   }
 
-  $timestamp += $timezone;
+  $timestamp += $timezones[$user->uid];
 
   switch ($type) {
+    case 'custom':
+      // No change to format.
+      break;
     case 'small':
       $format = variable_get('date_format_short', 'm/d/Y - H:i');
       break;
     case 'large':
       $format = variable_get('date_format_long', 'l, F j, Y - H:i');
-      break;
-    case 'custom':
-      // No change to format.
       break;
     case 'medium':
     default:
