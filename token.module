@@ -704,7 +704,7 @@ function token_element_validate(&$element, &$form_state) {
   }
 
   $tokens = token_scan($value);
-  $title = empty($elements['#title']) ? $elements['#parents'][0] : $elements['#title'];
+  $title = empty($element['#title']) ? $element['#parents'][0] : $element['#title'];
 
   // Validate if an element must have a minimum number of tokens.
   if (isset($element['#min_tokens']) && count($tokens) < $element['#min_tokens']) {
