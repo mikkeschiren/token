@@ -88,6 +88,29 @@ class TokenUnitTestCase extends TokenTestHelper {
         '[mod-yyyy]',
         '[site-name]',
         '[site-slogan]',
+        '[user-id]',
+      ),
+      'invalid tokens' => array(
+        '[title-invalid]',
+        '[invalid]',
+        '[mod-invalid]',
+        '[invalid-title]',
+        '[site-invalid]',
+        '[uid]',
+        '[comment-cid]',
+      ),
+      'types' => array('node'),
+    );
+    $tests[] = array(
+      'valid tokens' => array(
+        '[title-raw]',
+        '[yyyy]',
+        '[mod-yyyy]',
+        '[site-name]',
+        '[site-slogan]',
+        '[user-id]',
+        '[uid]',
+        '[comment-cid]',
       ),
       'invalid tokens' => array(
         '[title-invalid]',
@@ -96,7 +119,7 @@ class TokenUnitTestCase extends TokenTestHelper {
         '[invalid-title]',
         '[site-invalid]',
       ),
-      'types' => array('node'),
+      'types' => array('all'),
     );
 
     foreach ($tests as $test) {
@@ -107,7 +130,7 @@ class TokenUnitTestCase extends TokenTestHelper {
 
       sort($invalid_tokens);
       sort($test['invalid tokens']);
-      $this->assertEqual($invalid_tokens, $test['invalid tokens'], 'Invalid tokens detected properly.');
+      $this->assertEqual($invalid_tokens, $test['invalid tokens'], 'Invalid tokens detected properly: ' . implode(', ', $invalid_tokens));
     }
   }
 

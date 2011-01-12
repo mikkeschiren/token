@@ -615,36 +615,36 @@ function token_format_date($timestamp, $type = 'medium', $format = '', $timezone
  *   An array with the invalid tokens in their original raw forms.
  */
 function token_get_invalid_tokens_by_context($value, $valid_types = array(), $leading = TOKEN_PREFIX, $trailing = TOKEN_SUFFIX) {
-  // Add the token types that are always valid in global context.
-  if (!in_array('all', $valid_types)) {
+  if (in_array('all', $valid_types)) {
+    $valid_types = array('all');
+  }
+  else {
+    // Add the token types that are always valid in global context.
     $valid_types[] = 'global';
   }
 
   $invalid_tokens = array();
-  $valid_tokens = token_get_list($valid_types);
+  $valid_tokens = array();
   $value_tokens = is_string($value) ? token_scan($value, $leading, $trailing) : $value;
 
+  foreach (token_get_list($valid_types) as $category => $tokens) {
+    $valid_tokens += $tokens;
+  }
+
   foreach ($value_tokens as $token) {
-    $found = FALSE;
-    foreach ($valid_tokens as $category => $tokens) {
-      if (isset($tokens[$token])) {
-        $found = TRUE;
-        break;
-      }
-      elseif (preg_match('/^(.*[_-])\d+$/', $token, $result)) {
-        // Some modules use a 'wildcard' token, e.g. Location.module defines
-        // [location-country_N] but users actually use [location-country_0].
-        // If the token has a digit on the end and there is a 'wildcard'
-        // token definition, we should allow it.
-        if (isset($tokens[$result[1] . 'N']) || isset($tokens[$result[1] . '?'])) {
-          $found = TRUE;
-          break;
-        }
+    if (isset($valid_tokens[$token])) {
+      continue;
+    }
+    elseif (preg_match('/^(.*[_-])\d+$/', $token, $result)) {
+      // Some modules use a 'wildcard' token, e.g. Location.module defines
+      // [location-country_N] but users actually use [location-country_0].
+      // If the token has a digit on the end and there is a 'wildcard'
+      // token definition, we should allow it.
+      if (isset($valid_tokens[$result[1] . 'N']) || isset($valid_tokens[$result[1] . '?'])) {
+        continue;
       }
     }
-    if (!$found) {
-      $invalid_tokens[] = $token;
-    }
+    $invalid_tokens[] = $token;
   }
 
   array_unique($invalid_tokens);
