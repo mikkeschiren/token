@@ -1,5 +1,4 @@
 <?php
-// $Id$
 
 
 // Two helper functions that generate appropriate tokens for CCK-added fields.
