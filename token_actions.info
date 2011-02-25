@@ -1,4 +1,3 @@
-; $Id$
 name = Token actions
 description = Provides enhanced versions of core Drupal actions using the Token module.
 dependencies[] = token

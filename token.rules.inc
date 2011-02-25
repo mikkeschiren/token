@@ -1,5 +1,4 @@
 <?php
-// $Id$
 /**
  * @file
  * Rules integration for the token module.
