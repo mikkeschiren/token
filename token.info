@@ -1,3 +1,2 @@
-; $Id$
 name = Token
 description = Provides a shared API for replacement of textual wildcards and placeholders with actual data.

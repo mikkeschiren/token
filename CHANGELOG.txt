@@ -8,4 +8,3 @@ Before 2007-August-15
 Lots of stuff happened before we had a CHANGELOG.txt.
 
 
-$Id$

@@ -1,5 +1,4 @@
 <?php
-// $Id$
 
 /**
  * Return the value of $original, with all instances of placeholder
