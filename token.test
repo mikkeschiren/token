@@ -24,7 +24,15 @@ class TokenTestHelper extends DrupalWebTestCase {
     $values = token_get_values($type, $object, TRUE, $options);
     $values = array_combine($values->tokens, $values->values);
     foreach ($tokens as $token => $expected) {
-      $this->assertIdentical($values[$token], $expected, t("Token value for [@token] was '@actual', expected value '@expected'.", array('@token' => $token, '@actual' => $values[$token], '@expected' => $expected)));
+      if (!isset($expected)) {
+        $this->assertTrue(!isset($values[$token]), t("Token value for [@token] was not generated.", array('@token' => $token)));
+      }
+      elseif (!isset($values[$token])) {
+        $this->fail(t("Token value for [@token] was not generated.", array('@token' => $token)));
+      }
+      else {
+        $this->assertIdentical($values[$token], $expected, t("Token value for [@token] was '@actual', expected value '@expected'.", array('@token' => $token, '@actual' => $values[$token], '@expected' => $expected)));
+      }
     }
   }
 
