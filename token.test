@@ -128,6 +128,30 @@ class TokenUnitTestCase extends TokenTestHelper {
       ),
       'types' => array('all'),
     );
+    $tests[] = array(
+      'valid tokens' => array(
+        '[alpha]',
+        '[beta-1]',
+        '[beta-2]',
+        '[gamma_A]',
+        '[delta-extra]',
+        '[epsilon-zeta-A]',
+      ),
+      'invalid tokens' => array(
+        '[alpha-plus]',
+        '[beta]',
+        '[beta-]',
+        '[beta_]',
+        '[beta_1]',
+        '[beta-A]',
+        '[gamma]',
+        '[gamma_]',
+        '[gamma-A]',
+        '[delta]',
+        '[epsilon-zeta-]',
+      ),
+      'types' => array('all'),
+    );
 
     foreach ($tests as $test) {
       $tokens = array_merge($test['valid tokens'], $test['invalid tokens']);

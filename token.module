@@ -634,12 +634,19 @@ function token_get_invalid_tokens_by_context($value, $valid_types = array(), $le
     if (isset($valid_tokens[$token])) {
       continue;
     }
-    elseif (preg_match('/^(.*[_-])\d+$/', $token, $result)) {
-      // Some modules use a 'wildcard' token, e.g. Location.module defines
-      // [location-country_N] but users actually use [location-country_0].
-      // If the token has a digit on the end and there is a 'wildcard'
-      // token definition, we should allow it.
-      if (isset($valid_tokens[$result[1] . 'N']) || isset($valid_tokens[$result[1] . '?'])) {
+    elseif (preg_match('/^(.*[_-])([^-_])+$/', $token, $matches)) {
+      // Allow tokens that do not have a direct match to tokens listed in
+      // hook_token_info() to be matched against a 'wildcard' token name.
+      if (isset($valid_tokens[$matches[1] . '?'])) {
+        // [token-name-?] wildcards.
+        continue;
+      }
+      elseif (isset($valid_tokens[$matches[1] . '????'])) {
+        // [token-name-????] wildcards.
+        continue;
+      }
+      elseif (is_numeric($matches[2]) && isset($valid_tokens[$matches[1] . 'N'])) {
+        // [token-name-N] wildcards if N is a numeric value.
         continue;
       }
     }
