@@ -334,12 +334,6 @@ function token_get_values($type = 'global', $object = NULL, $flush = FALSE, $opt
     $tokens = array();
   }
 
-  // Since objects in PHP5 are always passed by reference, we ensure we're
-  // working on a copy of the object.
-  if (is_object($object)) {
-    $object = drupal_clone($object);
-  }
-
   // Neutralize options that do not affect token replacement.
   $serialized_options = $options;
   unset($serialized_options['clear']);
