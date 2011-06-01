@@ -21,7 +21,7 @@ class TokenTestHelper extends DrupalWebTestCase {
   }
 
   function assertTokens($type, $object, array $tokens, array $options = array()) {
-    $values = token_get_values($type, $object, TRUE, $options);
+    $values = token_get_values($type, $object, FALSE, $options);
     $values = array_combine($values->tokens, $values->values);
     foreach ($tokens as $token => $expected) {
       if (!isset($expected)) {
@@ -215,6 +215,24 @@ class TokenUnitTestCase extends TokenTestHelper {
       $output = token_replace($input);
       $this->assertEqual($output, $expected);
     }
+  }
+
+  /**
+   * Test token caching.
+   */
+  function testTokenCaching() {
+    // Run global tokens once so that the cache is primed.
+    $tokens = array(
+      'option-foo' => '',
+    );
+    $this->assertTokens('global', NULL, $tokens);
+
+    // Run global tokens again with different options. This should return a
+    // different value for the [option-foo] token.
+    $tokens = array(
+      'option-foo' => 'bar',
+    );
+    $this->assertTokens('global', NULL, $tokens, array('foo' => 'bar'));
   }
 }
 

@@ -309,21 +309,8 @@ function token_replace_multiple($text, $types = array('global' => NULL), $leadin
  * should be run through token_prepare_tokens().
  */
 function token_get_values($type = 'global', $object = NULL, $flush = FALSE, $options = array()) {
-  static $tokens;
-  static $running;
-
-  // Flush the static token cache. Useful for processes that need to slog through
-  // huge numbers of tokens in a single execution cycle. Flushing it will keep
-  // them from burning through memory.
-  if ($flush || !isset($tokens)) {
-    $tokens = array();
-  }
-
-  // Since objects in PHP5 are always passed by reference, we ensure we're
-  // working on a copy of the object.
-  if (is_object($object)) {
-    $object = drupal_clone($object);
-  }
+  static $tokens = array();
+  static $running = FALSE;
 
   // Simple recursion check. This is to avoid content_view()'s potential
   // for endless looping when a filter uses tokens, which load the content
@@ -336,27 +323,46 @@ function token_get_values($type = 'global', $object = NULL, $flush = FALSE, $opt
     $result->values = array();
     return $result;
   }
-
-  $running = TRUE;
-
-  token_include();
-
-  $id = _token_get_id($type, $object);
-  if ($id && isset($tokens[$type][$id])) {
-    $tmp_tokens = $tokens[$type][$id];
-  }
   else {
-    $tmp_tokens = module_invoke_all('token_values', $type, $object, $options);
-    $tokens[$type][$id] = $tmp_tokens;
+    $running = TRUE;
+  }
+
+  // Flush the static token cache. Useful for processes that need to slog
+  // through huge numbers of tokens in a single execution cycle. Flushing it
+  // will keep them from burning through memory.
+  if ($flush) {
+    $tokens = array();
+  }
+
+  // Since objects in PHP5 are always passed by reference, we ensure we're
+  // working on a copy of the object.
+  if (is_object($object)) {
+    $object = drupal_clone($object);
+  }
+
+  // Neutralize options that do not affect token replacement.
+  $serialized_options = $options;
+  unset($serialized_options['clear']);
+
+  // Store the token cache by object ID and serialized options.
+  $cid = _token_get_id($type, $object) . ':' . md5(serialize($serialized_options));
+  if ($type != 'global' && !isset($tokens[$type][$cid])) {
+    token_include();
+    $tokens[$type][$cid] = module_invoke_all('token_values', $type, $object, $options);
   }
 
   // Special-case global tokens, as we always want to be able to process
   // those substitutions.
-  if (!isset($tokens['global']['default'])) {
-    $tokens['global']['default'] = module_invoke_all('token_values', 'global');
+  if (!isset($tokens['global'][$cid])) {
+    token_include();
+    $tokens['global'][$cid] = module_invoke_all('token_values', 'global', NULL, $options);
   }
 
-  $all = array_merge($tokens['global']['default'], $tokens[$type][$id]);
+  $all = $tokens['global'][$cid];
+  if ($type != 'global') {
+    // Avoid using array_merge() if only global tokens were requested.
+    $all = array_merge($all, $tokens[$type][$cid]);
+  }
 
   $result = new stdClass();
   $result->tokens = array_keys($all);
