@@ -47,7 +47,7 @@ function user_token_values($type, $object = NULL, $options = array()) {
     $account = !empty($object) ? $object : user_load(array('uid' => $GLOBALS['user']->uid));
 
     // Adjust for the anonymous user name.
-    if (!$account->uid && !$account->name) {
+    if (!$account->uid && empty($account->name)) {
       $account->name = variable_get('anonymous', 'Anonymous');
     }
 
