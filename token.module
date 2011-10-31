@@ -371,6 +371,14 @@ function token_get_values($type = 'global', $object = NULL, $flush = FALSE, $opt
     $all = array_merge($all, $tokens[$type][$cid]);
   }
 
+  // Allow other modules to alter the replacements.
+  $context = array(
+    'type' => $type,
+    'object' => $object,
+    'options' => $options,
+  );
+  drupal_alter('token_values', $all, $context);
+
   $result = new stdClass();
   $result->tokens = array_keys($all);
   $result->values = array_values($all);
