@@ -322,6 +322,12 @@ class TokenNodeTestCase extends TokenTestHelper {
       'log-raw' => $node->log,
     );
     $this->assertTokens('node', $node, $tokens);
+
+    // Check that a new revision of a node returns different tokens.
+    $node->revision = TRUE;
+    $node->title = 'New revision';
+    node_save($node);
+    $this->assertTokens('node', $node, array('title' => 'New revision'));
   }
 }
 
