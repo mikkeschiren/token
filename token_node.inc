@@ -230,6 +230,9 @@ function menu_token_values($type, $object = NULL, $options = array()) {
     $values['menu-link-parent-path-raw'] = '';
 
     if (!isset($node->menu)) {
+      // We need to clone the node as menu_nodeapi($node, 'prepare') may cause data loss.
+      // @see http://drupal.org/node/1317926
+      $node = drupal_clone($node);
       // Nodes do not have their menu links loaded via menu_nodeapi($node, 'load').
       menu_nodeapi($node, 'prepare');
     }

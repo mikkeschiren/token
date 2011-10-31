@@ -519,6 +519,17 @@ class TokenMenuTestCase extends TokenTestHelper {
       'menu-link-parent-path-raw' => 'root/parent',
     );
     $this->assertTokens('node', $node, $tokens);
+
+    // Reload the node which will not have $node->menu defined and re-test.
+    $loaded_node = node_load($node->nid);
+    // We have to reset the token static cache because tokens are cached by
+    // node ID only and not if the node object has changed.
+    $this->assertTokens('node', $loaded_node, $tokens, array('reset' => TRUE));
+
+    // Regression test for http://drupal.org/node/1317926 to ensure the
+    // original node object is not changed when calling menu_node_prepare().
+    $this->assertTrue(!isset($loaded_node->menu), t('The $node->menu property was not modified during token replacement.'), 'Regression');
+
   }
 }
 

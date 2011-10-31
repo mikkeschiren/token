@@ -336,7 +336,7 @@ function token_get_values($type = 'global', $object = NULL, $flush = FALSE, $opt
   // Flush the static token cache. Useful for processes that need to slog
   // through huge numbers of tokens in a single execution cycle. Flushing it
   // will keep them from burning through memory.
-  if ($flush) {
+  if ($flush || !empty($options['reset'])) {
     $tokens = array();
   }
 
