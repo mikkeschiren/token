@@ -14,6 +14,9 @@ class TokenTestHelper extends DrupalWebTestCase {
     $modules[] = 'token';
     $modules[] = 'token_test';
     parent::setUp($modules);
+
+    // Clear the token static cache.
+    token_get_values('reset');
   }
 
   function assertToken($type, $object, $token, $expected, array $options = array()) {
@@ -233,6 +236,26 @@ class TokenUnitTestCase extends TokenTestHelper {
       'option-foo' => 'bar',
     );
     $this->assertTokens('global', NULL, $tokens, array('foo' => 'bar'));
+  }
+
+  /**
+   * Test the token_scan() function.
+   */
+  function testTokenScan() {
+    $tests = array(
+      array('text' => 'Test [foo] [[bar]] test.', 'tokens' => array('foo', 'bar')),
+      array('text' => 'Test [foo] [] test.',    'tokens' => array('foo')),
+      array('text' => 'Test [foo][] test.',     'tokens' => array('foo')),
+      array('text' => 'Test [foo][bar] test.',  'tokens' => array('foo', 'bar')),
+      array('text' => 'Test %foo %%bar test.',   'tokens' => array('foo', 'bar'), 'leading' => '%', 'trailing' => ''),
+      array('text' => 'Test %foo % test.',      'tokens' => array('foo'),        'leading' => '%', 'trailing' => ''),
+      array('text' => 'Test %foo% test.',       'tokens' => array('foo'),        'leading' => '%', 'trailing' => ''),
+      array('text' => 'Test %foo%%bar test.',    'tokens' => array('foo', 'bar'), 'leading' => '%', 'trailing' => ''),
+    );
+    foreach ($tests as $test) {
+      $test += array('leading' => TOKEN_PREFIX, 'trailing' => TOKEN_SUFFIX);
+      $this->assertEqual(token_scan($test['text'], $test['leading'], $test['trailing']), $test['tokens']);
+    }
   }
 }
 

@@ -250,6 +250,12 @@ function token_replace($text, $type = 'global', $object = NULL, $leading = TOKEN
  *   Text with tokens replaced.
  */
 function token_replace_multiple($text, $types = array('global' => NULL), $leading = TOKEN_PREFIX, $trailing = TOKEN_SUFFIX, $options = array(), $flush = FALSE) {
+  // If there are no tokens to replace, just return the text.
+  $text_tokens = token_scan($text, $leading, $trailing);
+  if (empty($text_tokens)) {
+    return $text;
+  }
+
   $full = new stdClass();
   $full->tokens = $full->values = array();
 
@@ -266,7 +272,7 @@ function token_replace_multiple($text, $types = array('global' => NULL), $leadin
 
   // Support clearing out tokens that would not be replaced.
   if (!empty($options['clear'])) {
-    foreach (token_scan($text) as $token) {
+    foreach ($text_tokens as $token) {
       if (!in_array($token, $full->tokens)) {
         $full->tokens[] = $token;
         $full->values[] = '';
@@ -332,6 +338,13 @@ function token_get_values($type = 'global', $object = NULL, $flush = FALSE, $opt
   // will keep them from burning through memory.
   if ($flush) {
     $tokens = array();
+  }
+
+  // Allow simple resets of the static values.
+  if ($type === 'reset') {
+    $tokens = array();
+    $running = FALSE;
+    return;
   }
 
   // Neutralize options that do not affect token replacement.
@@ -677,7 +690,7 @@ function token_scan($text, $leading = TOKEN_PREFIX, $trailing = TOKEN_SUFFIX) {
   // Matches tokens with the following pattern: [$token]
   $leading = preg_quote($leading, '/');
   $trailing = preg_quote($trailing, '/');
-  preg_match_all("/{$leading}([^\s]+?){$trailing}/", $text, $matches);
+  preg_match_all("/{$leading}([^\s{$leading}{$trailing}]+){$trailing}/x", $text, $matches);
   return $matches[1];
 }
 
