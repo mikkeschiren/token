@@ -250,6 +250,23 @@ function token_replace($text, $type = 'global', $object = NULL, $leading = TOKEN
  *   Text with tokens replaced.
  */
 function token_replace_multiple($text, $types = array('global' => NULL), $leading = TOKEN_PREFIX, $trailing = TOKEN_SUFFIX, $options = array(), $flush = FALSE) {
+  // Ensure that the $text parameter is a string and not an array which is an
+  // invalid input.
+  if (is_array($text)) {
+    $backtrace = debug_backtrace();
+    foreach ($backtrace as $caller) {
+      switch ($caller['function']) {
+        case 'token_replace':
+        case 'token_replace_multiple':
+          $last = $caller;
+          continue;
+        default:
+          trigger_error(t('The @last() function called token replacement with an array rather than a string for $text', array('@last' => $caller['function'], '@current' => $last['function'])), E_USER_NOTICE);
+          return $text;
+      }
+    }
+  }
+
   // If there are no tokens to replace, just return the text.
   $text_tokens = token_scan($text, $leading, $trailing);
   if (empty($text_tokens)) {
