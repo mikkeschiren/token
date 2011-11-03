@@ -261,9 +261,14 @@ function token_replace_multiple($text, $types = array('global' => NULL), $leadin
           continue;
         default:
           trigger_error(t('The @function() function called token replacement with an array rather than a string for $text', array('@function' => $caller['function'])), E_USER_NOTICE);
-          return $text;
+          break 2;
       }
     }
+
+    foreach ($text as $key => $value) {
+      $text[$key] = token_replace_multiple($value, $types, $leading, $trailing, $options, $flush);
+    }
+    return $text;
   }
 
   // If there are no tokens to replace, just return the text.
