@@ -716,10 +716,22 @@ function token_get_invalid_tokens_by_context($value, $valid_types = array(), $le
  *   An array of discovered tokens.
  */
 function token_scan($text, $leading = TOKEN_PREFIX, $trailing = TOKEN_SUFFIX) {
-  // Matches tokens with the following pattern: [$token]
-  $leading = preg_quote($leading, '/');
-  $trailing = preg_quote($trailing, '/');
-  preg_match_all("/{$leading}([^\s{$leading}{$trailing}]+){$trailing}/x", $text, $matches);
+  $leadingregex = preg_quote($leading, '/');
+  $trailingregex = preg_quote($trailing, '/');
+
+  $regex = '/' . $leadingregex;
+  $regex .= '([^\s';
+  if (drupal_strlen($leading) == 1) {
+    // Only add the leading string as a non-match if it is a single character.
+    $regex .= $leadingregex;
+  }
+  if (drupal_strlen($trailing) == 1) {
+    // Only add the trailing string as a non-match if it is a single character.
+    $regex .= $trailingregex;
+  }
+  $regex .= ']+)' . $trailingregex . '/x';
+
+  preg_match_all($regex, $text, $matches);
   return $matches[1];
 }
 
