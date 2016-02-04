@@ -1,5 +1,5 @@
 {
-  "name": "drupal/token",
+  "name": "wkse/token",
   "description": "Provides a user interface for the Token API and some missing core tokens.",
   "type": "drupal-module",
   "homepage": "https://www.drupal.org/project/token",
