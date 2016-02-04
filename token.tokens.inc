@@ -5,6 +5,7 @@
  * Token callbacks for the token module.
  */
 use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\Core\Render\Element;
 use Drupal\Component\Utility\Crypt;
@@ -371,6 +372,30 @@ function token_token_info() {
     'description' => t('A random hash. The possible hashing algorithms are: @hash-algos.', array('@hash-algos' => implode(', ', hash_algos()))),
     'dynamic' => TRUE,
   );
+
+  // Provide field tokens for content entities.
+  $entity_manager = \Drupal::entityManager();
+  $store_entities = array_filter($entity_manager->getDefinitions(), function($definition) {
+    return $definition->getGroup() == 'content';
+  });
+
+  foreach ($store_entities as $entity_info) {
+    $info['types'][$entity_info->id()] = [
+      'name' => $entity_info->getLabel(),
+      'description' => t('Tokens related to %entity entity.', ['%entity' => $entity_info->getLabel()]),
+      'needs-data' => $entity_info->id()
+    ];
+    $fields = array_filter($entity_manager->getFieldStorageDefinitions($entity_info->id()), function($field) {
+      return $field instanceof \Drupal\Core\Field\BaseFieldDefinition;
+    });
+    foreach ($fields as $field) {
+      $info['tokens'][$entity_info->id()][$field->getName()] = array(
+        'name' => $field->getLabel(),
+        'description' => $field->getDescription() ? $field->getDescription() : '',
+        'module' => 'token'
+      );
+    }
+  }
 
   return $info;
 }
@@ -1266,10 +1291,14 @@ function field_tokens($type, $tokens, array $data = array(), array $options = ar
       if ($entity->hasField($name) && _token_module($data['token_type'], $name) == 'token') {
 
         // Do not continue if the field is empty or not a configurable field.
-        if ($entity->get($name)->isEmpty() || !($entity->getFieldDefinition($name) instanceof FieldConfigInterface)) {
+        if ($entity->get($name)->isEmpty()) {
           continue;
         }
-
+        $definition = $entity->getFieldDefinition($name);
+        if ((!$definition instanceof FieldConfigInterface)
+          && (!$definition instanceof BaseFieldDefinition)) {
+          continue;
+        }
         $display_options = 'token';
         if (!$token_view_display) {
           // We don't have the token view display and should fall back on
